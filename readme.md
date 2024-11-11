@@ -1,4 +1,21 @@
-#Mocks
+#03B
+
+## Data Exploraiton
+I use a combination of object and language detection frameworks to build a function that:
+1. Scrapes SI website (for more information than is available via API)
+2. Creates a df with data and saves image
+3. Detects and labels key words with NER (e.g. PERSON or ORGANIZATION)
+4. Detects 12 categories of clothing in the image (e.g. headwear, pants, etc) and 46 sub-categories, labels them, then extracts them from the image as separate images.
+
+![image](https://github.com/user-attachments/assets/9f84ac57-9f5d-4b18-9c9c-bf94c69065e1)
+
+![image](https://github.com/user-attachments/assets/3bcec15f-aa57-47c4-86b7-da69d6e9a7ad)
+![image](https://github.com/user-attachments/assets/9a983a32-2af5-4e85-9b4e-675be398c019)
+
+
+
+## Mock Design
+Below are preliminary designs that will guide application of the data:
 ![Home](https://github.com/user-attachments/assets/0aa6b97d-793f-4995-ae11-9c7d0d9693ca)
 ![Drilldown](https://github.com/user-attachments/assets/4532b662-0f77-4f82-af99-b0016392df66)
 
