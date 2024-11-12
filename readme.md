@@ -16,13 +16,12 @@ I use a combination of object and language detection frameworks to build a funct
 
 ## Mock Design
 Below are preliminary designs that will guide application of the data:
-![Home](https://github.com/user-attachments/assets/0aa6b97d-793f-4995-ae11-9c7d0d9693ca)
-![Drilldown](https://github.com/user-attachments/assets/4532b662-0f77-4f82-af99-b0016392df66)
-
-![Item Overlay](https://github.com/user-attachments/assets/49fd084a-4f05-41bc-82ae-ef6441d5a69e)
-
-![Alt Drilldown](https://github.com/user-attachments/assets/750c1ba6-0a46-4110-87b5-14eefbf232db)
-
+![Home](https://github.com/user-attachments/assets/ed4e00d0-3693-4928-84a9-2cea36568682)
+![Home - Cat Expand](https://github.com/user-attachments/assets/e902dfa1-cb8b-41bb-948c-759d6e4241f7)
+![Drilldown](https://github.com/user-attachments/assets/1a1b932a-7637-4f6e-b177-921a7f91b2d6)
+![Item Overlay](https://github.com/user-attachments/assets/da33f5b5-6f2f-41ea-95c5-7e3717c5d498)
+![Collection](https://github.com/user-attachments/assets/f3cae262-2a9c-4371-9264-fe3ee0b64b8f)
+![Alt Drilldown](https://github.com/user-attachments/assets/2f205620-eee8-4639-8ec7-eb07d9476ee4)
 
 # sketches / wires
 
