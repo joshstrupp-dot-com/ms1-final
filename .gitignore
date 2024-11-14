@@ -1,2 +1,5 @@
 # Ignore archive folder
 archive/
+
+# ignore .env file
+.env
