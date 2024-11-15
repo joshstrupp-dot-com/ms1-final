@@ -3,3 +3,6 @@ archive/
 
 # ignore .env file
 .env
+
+# ignore any folders that start with "checkpoints"  
+checkpoints*/

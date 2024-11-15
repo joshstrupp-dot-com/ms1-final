@@ -1,452 +1,413 @@
-//////////////////////////////// SET UP BASE AND DATA ////////////////////////////////////
+////////////////////////////// SET UP BASE AND DATA ////////////////////////////////////
 
 // Constants for the visualization
 const width = window.innerWidth;
 const height = window.innerHeight;
 const nodeRadius = 10;
 
+// Categories in order
+const categories = ["Museum", "Country", "Topic", "Year"];
+
 // Create the SVG container
 const svg = d3
   .select("#visualization")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height)
-  .attr("viewBox", [0, 0, width, height]);
+  .attr("width", "100%")
+  .attr("height", "100%")
+  .attr("viewBox", `0 0 ${width} ${height}`)
+  .attr("preserveAspectRatio", "xMidYMid meet");
 
-// Load and process the data
-d3.csv("final_data_cat_test.csv").then((data) => {
-  // Process data to get museum hierarchy
-  const museumGroups = d3.group(data, (d) => d.Museum);
+// Declare variables to hold root and current category
+let root;
+let currentCategory = categories[0]; // Default category is "Museum"
+let currentDepth = 1; // Keep track of current depth level
+let sizeScale; // Global sizeScale for nodes
 
-  //////////////////////////////// MUSEUM CIRCLE SETUP ////////////////////////////////
+////////////////////////////// CATEGORY CHOOSER ////////////////////////////////
 
-  // This code organizes museum data into a tree structure where each museum is represented
-  // by a circle. The size of each circle shows how many unique images that museum has -
-  // bigger circles mean more images. The circles will be sized between 10 and 50 pixels.
+// Create dropdown for selecting category
+const categorySelect = d3
+  .select("#visualization")
+  .insert("select", "svg")
+  .style("position", "absolute")
+  .style("top", "20px")
+  .style("left", "20px");
 
+// Add options to the dropdown
+categorySelect
+  .selectAll("option")
+  .data(categories)
+  .enter()
+  .append("option")
+  .text((d) => d)
+  .attr("value", (d) => d);
+
+// Add event listener for dropdown changes
+categorySelect.on("change", function (event) {
+  const selectedCategory = event.target.value;
+  if (currentDepth === 1) {
+    // Update depth 1 nodes
+    updateVisualization(selectedCategory, data);
+  } else if (currentDepth === 2) {
+    // Update depth 2 nodes
+    updateChildNodes(selectedCategory);
+  }
+});
+
+////////////////////////////// PHYSICS / FORCE SIMULATION ////////////////////////////////
+
+const simulation = d3
+  .forceSimulation()
+  .force("charge", d3.forceManyBody().strength(-100))
+  .force("center", d3.forceCenter(width / 2, height / 2))
+  .force(
+    "collision",
+    d3.forceCollide().radius((d) => nodeRadius + 10)
+  )
+  .force("x", d3.forceX(width / 2).strength(0.1))
+  .force("y", d3.forceY(height / 2).strength(0.1));
+
+////////////////////////////// BUILD HIERARCHY FUNCTION ////////////////////////////////
+
+function buildHierarchy(data, selectedCategory) {
+  // Group data by the selected category
+  const groups = d3.group(data, (d) => d[selectedCategory] || "Unknown");
+
+  // Build hierarchy data
   const hierarchyData = {
     name: "root",
-    children: Array.from(museumGroups, ([museum, entries]) => ({
-      name: museum,
-      size: new Set(entries.map((d) => d.Image_URL)).size, // Count unique parent images
-      children: [], // Will be populated when clicked
+    children: Array.from(groups, ([key, values]) => ({
+      name: key,
+      size: values.length, // Use count for sizing
+      originalEntries: values, // Keep original entries for further interactions
     })),
   };
 
-  // Create hierarchy and calculate initial positions
-  const root = d3.hierarchy(hierarchyData);
+  // Create hierarchy and compute initial positions
+  const newRoot = d3.hierarchy(hierarchyData);
 
-  // Size nodes based on log scale of unique images
-  const sizeScale = d3
-    .scaleLog()
-    .domain([1, d3.max(root.children, (d) => d.data.size)])
+  // Assign unique sizes based on counts
+  sizeScale = d3
+    .scaleLinear()
+    .domain([
+      1,
+      d3.max(
+        newRoot.descendants().filter((d) => d.depth === 1),
+        (d) => d.data.size
+      ),
+    ])
+    .range([20, 70]);
+
+  console.log("Hierarchy Data:", hierarchyData);
+  console.log("D3 Hierarchy Root:", newRoot);
+
+  return newRoot;
+}
+
+////////////////////////////// HANDLING CLICK EVENTS ////////////////////////////////
+
+function handleClick(event, d) {
+  // Remove existing links and image container
+  svg.selectAll(".link").remove();
+  d3.select("#image-container").remove();
+
+  if (d.depth === 1) {
+    // Determine the next category in the categories list
+    let currentCategoryIndex = categories.indexOf(currentCategory);
+    let nextCategoryIndex = currentCategoryIndex + 1;
+
+    // If we've reached the end of the categories list
+    if (nextCategoryIndex >= categories.length) {
+      nextCategoryIndex = 0; // Loop back to the first category
+    }
+
+    const nextCategory = categories[nextCategoryIndex];
+
+    // Group data from the clicked node's original entries based on the nextCategory
+    const childGroups = d3.group(
+      d.data.originalEntries,
+      (entry) => entry[nextCategory] || "Unknown"
+    );
+
+    // Create child nodes for the next category
+    const childNodes = Array.from(childGroups, ([key, values]) => ({
+      depth: 2,
+      data: {
+        name: key,
+        size: values.length,
+        originalEntries: values,
+      },
+      x: d.x,
+      y: d.y,
+      parent: d,
+    }));
+
+    // Update the current depth and category
+    currentDepth = 2;
+    currentChildCategory = nextCategory;
+
+    createForceLayout(d, childNodes);
+  } else if (d.depth === 2) {
+    // Display images associated with this node
+    const imageUrls = Array.from(
+      new Set(d.data.originalEntries.map((entry) => entry.Image_URL))
+    );
+
+    // Create or select image container
+    let imageContainer = d3.select("#image-container");
+
+    if (imageContainer.empty()) {
+      imageContainer = d3
+        .select("body")
+        .append("div")
+        .attr("id", "image-container")
+        .style("position", "fixed")
+        .style("right", "20px")
+        .style("top", "20px")
+        .style("width", "300px")
+        .style("max-height", "90vh")
+        .style("overflow-y", "auto")
+        .style("background", "white")
+        .style("padding", "10px")
+        .style("border", "1px solid #ccc");
+    }
+
+    // Clear previous images
+    imageContainer.html("");
+
+    // Add title
+    imageContainer
+      .append("h3")
+      .text(`${d.data.name} (${imageUrls.length} images)`);
+
+    // Add images
+    imageContainer
+      .selectAll(".artwork-image")
+      .data(imageUrls)
+      .join("div")
+      .attr("class", "artwork-image")
+      .style("margin-bottom", "10px")
+      .each(function (url) {
+        const div = d3.select(this);
+        div
+          .append("img")
+          .attr("src", url)
+          .style("width", "100%")
+          .style("height", "auto");
+        div
+          .append("p")
+          .style("margin", "5px 0")
+          .style("font-size", "12px")
+          .text(url.split("/").pop());
+      });
+  }
+}
+
+////////////////////////////// CREATING FORCE LAYOUT ////////////////////////////////
+
+function createForceLayout(parentNode, newNodes) {
+  // Create a scale to size the child circles based on their data
+  const childSizeScale = d3
+    .scaleLinear()
+    .domain([1, d3.max(newNodes, (d) => d.data.size)])
     .range([10, 50]);
 
-  //////////////////////////////// PHYSICS / FORCE SIMULATION ////////////////////////////////
+  // Create connections (links) between the parent circle and each child circle
+  const links = newNodes.map((node) => ({
+    source: parentNode,
+    target: node,
+  }));
 
-  // This code creates a physics simulation that makes the circles move naturally:
-  // - Circles push away from each other like magnets
-  // - Everything is pulled toward the center of the screen
-  // - Circles can't overlap each other
-  // - Circles are gently kept from going off screen
-  const simulation = d3
-    .forceSimulation(root.descendants())
-    .force("charge", d3.forceManyBody().strength(-300))
-    .force("center", d3.forceCenter(width / 2, height / 2))
+  // Update simulation with new nodes
+  simulation
+    .nodes([...simulation.nodes(), ...newNodes])
+    .force("link", d3.forceLink(links).distance(150).strength(0.5))
     .force(
       "collision",
       d3.forceCollide().radius((d) => {
-        if (d.depth === 0) return 0;
-        return (d.depth === 1 ? sizeScale(d.data.size) : nodeRadius) + 20;
+        if (d.depth === 1) return sizeScale(d.data.size) + 10;
+        if (d.depth === 2) return childSizeScale(d.data.size) + 10;
+        return nodeRadius + 20;
       })
     )
-    // Reduced strength of boundary forces to allow more spacing
-    .force("x", d3.forceX(width / 2).strength(0.05))
-    .force("y", d3.forceY(height / 2).strength(0.05));
+    .force(
+      "charge",
+      d3.forceManyBody().strength((d) => (d.depth > 1 ? -150 : -300))
+    )
+    .alpha(1)
+    .restart();
 
-  //////////////////////////////// MUSEUM CIRCLE DRAWING ////////////////////////////////
+  // Draw lines connecting parent and child circles
+  const linkElements = svg
+    .selectAll(".link")
+    .data(links)
+    .join("line")
+    .attr("class", "link")
+    .style("stroke", "#999")
+    .style("stroke-opacity", 0.6)
+    .style("stroke-width", 1);
 
-  // This code creates interactive circles representing museums on the screen.
-  // Each circle's size shows how many images that museum has, and you can
-  // click on them. The museum's name appears above each circle.
+  // Keep track of visible nodes
+  const allVisibleNodes = [...simulation.nodes()];
 
-  // Create nodes
-  const nodes = svg
+  // Assign unique IDs if not present
+  let i = 0; // Counter for unique IDs
+  allVisibleNodes.forEach((d) => {
+    if (!d.data.id) {
+      d.data.id = `node-${i++}`;
+    }
+  });
+
+  // Add circles for new nodes with unique keys
+  const nodeElements = svg
     .selectAll(".node")
-    .data(root.descendants().slice(1)) // Skip root node
+    .data(allVisibleNodes, (d) => d.data.id)
     .join("circle")
     .attr("class", "node")
-    .attr("r", (d) => (d.depth === 1 ? sizeScale(d.data.size) : nodeRadius))
-    .style("fill", "steelblue")
+    .attr("r", (d) => {
+      if (d.depth === 1) return sizeScale(d.data.size);
+      if (d.depth === 2) return childSizeScale(d.data.size);
+      return nodeRadius;
+    })
+    .style("fill", (d) => {
+      if (d.depth === 2) return "red";
+      return "steelblue";
+    })
     .style("cursor", "pointer")
     .on("click", handleClick);
 
-  // Add museum labels
-  const labels = svg
+  // Add labels for new nodes with unique keys
+  const labelElements = svg
     .selectAll(".label")
-    .data(root.descendants().slice(1))
+    .data(allVisibleNodes, (d) => d.data.id)
     .join("text")
     .attr("class", "label")
     .style("text-anchor", "middle")
     .style("font-size", "12px")
     .text((d) => d.data.name);
 
-  //////////////////////////////// MUSEUM CIRCLE POSITIONING ////////////////////////////////
-
-  // This code updates the positions of the circles and labels on each tick
-  // of the simulation. It ensures that the circles and labels stay within the
-  // bounds of the screen and are positioned correctly.
-
+  // Update simulation tick
   simulation.on("tick", () => {
-    nodes
-      .attr("cx", (d) =>
-        Math.max(nodeRadius, Math.min(width - nodeRadius, d.x))
-      )
-      .attr("cy", (d) =>
-        Math.max(nodeRadius, Math.min(height - nodeRadius, d.y))
-      );
-
-    labels
-      .attr("x", (d) => Math.max(nodeRadius, Math.min(width - nodeRadius, d.x)))
-      .attr("y", (d) => {
-        const radius = d.depth === 1 ? sizeScale(d.data.size) : nodeRadius;
-        return Math.max(radius, Math.min(height - radius, d.y - radius - 5));
+    nodeElements
+      .attr("cx", (d) => {
+        d.x = Math.max(nodeRadius, Math.min(width - nodeRadius, d.x));
+        return d.x;
+      })
+      .attr("cy", (d) => {
+        d.y = Math.max(nodeRadius, Math.min(height - nodeRadius, d.y));
+        return d.y;
       });
+
+    labelElements
+      .attr("x", (d) => d.x)
+      .attr("y", (d) => {
+        const radius =
+          d.depth === 1 ? sizeScale(d.data.size) : childSizeScale(d.data.size);
+        return d.y - radius - 5;
+      });
+
+    linkElements
+      .attr("x1", (d) => d.source.x)
+      .attr("y1", (d) => d.source.y)
+      .attr("x2", (d) => d.target.x)
+      .attr("y2", (d) => d.target.y);
   });
 
-  //////////////////////////////// HANDLING CLICK EVENTS ////////////////////////////////
+  // Restart the simulation
+  simulation.alpha(1).restart();
+}
 
-  function handleClick(event, d) {
-    // This function handles what happens when someone clicks on a circle
+////////////////////////////// UPDATE VISUALIZATION ////////////////////////////////
 
-    // First, remove any existing lines between circles
-    svg.selectAll(".link").remove();
+function updateVisualization(selectedCategory, data) {
+  currentCategory = selectedCategory;
+  currentDepth = 1;
 
-    if (d.depth === 3) {
-      // This code runs when you click on a topic circle (the smallest circles)
+  // Rebuild hierarchy based on the new category
+  root = buildHierarchy(data, selectedCategory);
 
-      // Get all the image URLs associated with this topic
-      // If there are no images, use an empty array instead
-      const imageUrls = Array.from(d.data.imageUrls || []);
+  // Clear existing SVG elements
+  svg.selectAll(".node").remove();
+  svg.selectAll(".label").remove();
+  svg.selectAll(".link").remove();
+  d3.select("#image-container").remove(); // Remove image container if exists
 
-      // Look for an existing container on the page where we'll show the images
-      let imageContainer = d3.select("#image-container");
+  // Create nodes
+  const nodes = svg
+    .selectAll(".node")
+    .data(root.children) // Use depth 1 nodes
+    .join("circle")
+    .attr("class", "node")
+    .attr("r", (d) => sizeScale(d.data.size))
+    .style("fill", "steelblue")
+    .style("cursor", "pointer")
+    .on("click", handleClick);
 
-      // If we can't find the container, create a new one
-      // This creates a white box on the right side of the screen
-      // that can scroll if there are lots of images
-      if (imageContainer.empty()) {
-        imageContainer = d3
-          .select("body")
-          .append("div")
-          .attr("id", "image-container")
-          .style("position", "fixed") // Stick it to one spot on the screen
-          .style("right", "20px") // 20 pixels from the right edge
-          .style("top", "20px") // 20 pixels from the top
-          .style("width", "300px") // Make it 300 pixels wide
-          .style("max-height", "90vh") // Make it at most 90% of screen height
-          .style("overflow-y", "auto") // Add scrollbar if content is too tall
-          .style("background", "white")
-          .style("padding", "10px") // Add some space inside the box
-          .style("border", "1px solid #ccc"); // Add a gray border
-      }
+  // Add labels
+  const labels = svg
+    .selectAll(".label")
+    .data(root.children)
+    .join("text")
+    .attr("class", "label")
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .text((d) => d.data.name);
 
-      // Remove any images that were shown before
-      imageContainer.html("");
+  // Update simulation with new nodes
+  simulation.nodes(root.children);
 
-      // Add a title showing the topic name and how many images there are
-      imageContainer
-        .append("h3")
-        .text(`${d.data.name} (${imageUrls.length} images)`);
+  // Restart simulation
+  simulation.alpha(1).restart();
+}
 
-      // For each image URL we have:
-      // 1. Create a div to hold the image
-      // 2. Put the actual image inside that div
-      // 3. Add the filename below the image
-      imageContainer
-        .selectAll(".artwork-image")
-        .data(imageUrls)
-        .join("div")
-        .attr("class", "artwork-image")
-        .style("margin-bottom", "10px") // Space between images
-        .each(function (url) {
-          const div = d3.select(this);
-          // Add the image itself
-          div
-            .append("img")
-            .attr("src", url)
-            .style("width", "100%") // Make image fill the container width
-            .style("height", "auto"); // Keep image proportions correct
-          // Add the filename under the image
-          div
-            .append("p")
-            .style("margin", "5px 0")
-            .style("font-size", "12px")
-            .text(url.split("/").pop()); // Get just the filename from the full URL
-        });
-    } else if (d.depth === 1) {
-      // When clicking a museum circle (blue):
+function updateChildNodes(selectedCategory) {
+  // Remove existing depth 2 nodes and links
+  svg.selectAll(".link").remove();
+  svg
+    .selectAll(".node")
+    .filter((d) => d.depth === 2)
+    .remove();
+  svg
+    .selectAll(".label")
+    .filter((d) => d.depth === 2)
+    .remove();
 
-      // Get all the artwork data for this museum
-      const museumEntries = museumGroups.get(d.data.name);
+  // For each parent node, generate new child nodes based on the selectedCategory
+  root.children.forEach((parentNode) => {
+    const childGroups = d3.group(
+      parentNode.data.originalEntries,
+      (entry) => entry[selectedCategory] || "Unknown"
+    );
 
-      //////////////////////////////// "PLACE" CIRCLE SETUP ////////////////////////////////
-
-      // Count how many artworks are from each place
-      const placeCounts = museumEntries.reduce((acc, entry) => {
-        if (entry.est_place) {
-          acc[entry.est_place] = (acc[entry.est_place] || 0) + 1;
-        }
-        return acc;
-      }, {});
-
-      // Create new red circles for each place where art was made
-      // The size of each circle shows how many artworks are from that place
-      const newNodes = Object.entries(placeCounts).map(([place, count]) => ({
-        depth: 2,
-        data: {
-          name: place,
-          size: count, // How many artworks from this place
-          originalEntries: museumEntries.filter(
-            (entry) => entry.est_place === place
-          ),
-        },
-        x: d.x,
-        y: d.y,
-        parent: d,
-      }));
-
-      // Draw the new circles and connect them to the museum circle
-      createForceLayout(d, newNodes);
-    } else if (d.depth === 2) {
-      // When clicking a place circle (red):
-
-      // Get all the artwork data for this place
-      const entries = d.data.originalEntries;
-
-      //////////////////////////////// "TOPIC" CIRCLE SETUP ////////////////////////////////
-      // Count how many unique artworks are in each topic/category
-      const topicCounts = entries.reduce((acc, entry) => {
-        if (entry.topic) {
-          // We use Image_URL to avoid counting duplicates
-          const imageUrl = entry.Image_URL;
-          if (!acc[entry.topic]) {
-            acc[entry.topic] = new Set();
-          }
-          acc[entry.topic].add(imageUrl);
-        }
-        return acc;
-      }, {});
-
-      // Get all unique Image_URLs for each topic
-      const imageUrlsByTopic = entries.reduce((acc, entry) => {
-        if (entry.topic) {
-          const topic = entry.topic;
-          const imageUrl = entry.Image_URL;
-          if (!acc[topic]) {
-            acc[topic] = new Set();
-          }
-          acc[topic].add(imageUrl);
-        }
-        return acc;
-      }, {});
-
-      // Create new orange circles for each topic
-      // The size of each circle shows how many unique artworks are in that topic
-      const newNodes = Object.entries(topicCounts).map(([topic, imageSet]) => ({
-        depth: 3,
-        data: {
-          name: topic,
-          size: imageSet.size,
-          imageUrls: Array.from(imageUrlsByTopic[topic] || new Set()),
-        },
-        x: d.x,
-        y: d.y,
-        parent: d,
-      }));
-
-      //////////////////////////////// IMAGE NODE SETUP ////////////////////////////////
-
-      // Draw the new circles and connect them to the place circle
-      createForceLayout(d, newNodes);
-    }
-  }
-
-  //////////////////////////////// CREATING FORCE LAYOUT ////////////////////////////////
-
-  // This section creates and manages an interactive force-directed graph visualization.
-  // It handles:
-  // 1. Creating and positioning circles representing museums, places, and topics
-  // 2. Drawing connecting lines between related circles
-  // 3. Setting up physics-based animations for natural movement
-  // 4. Managing circle sizes, colors, labels and click interactions
-  // 5. Implementing orbital-like arrangements of child nodes around parents
-
-  function createForceLayout(parentNode, newNodes) {
-    // Create a scale to size the child circles based on their data
-    // Larger numbers = bigger circles, using a logarithmic scale
-    const childSizeScale = d3
-      .scaleLog()
-      .domain([1, d3.max(newNodes, (d) => d.data.size)])
-      .range([10, 50]);
-
-    // Create connections (links) between the parent circle and each child circle
-    const links = newNodes.map((node) => ({
-      source: parentNode,
-      target: node,
+    const childNodes = Array.from(childGroups, ([key, values]) => ({
+      depth: 2,
+      data: {
+        name: key,
+        size: values.length,
+        originalEntries: values,
+      },
+      x: parentNode.x,
+      y: parentNode.y,
+      parent: parentNode,
     }));
 
-    // Set up physics simulation to make circles move naturally:
-    simulation
-      .nodes([...root.descendants().slice(1), ...newNodes])
-      // Add forces that determine how circles move:
-      .force("link", d3.forceLink(links).distance(150).strength(0.5)) // How far apart linked circles should be
-      .force(
-        "collision",
-        d3.forceCollide().radius((d) => {
-          if (d.depth === 0) return 0;
-          // Add padding around circles to prevent overlap
-          return (d.depth === 1 ? sizeScale(d.data.size) : nodeRadius) + 30;
-        })
-      )
-      .force(
-        "charge",
-        d3.forceManyBody().strength((d) => (d.depth > 1 ? -200 : -300)) // Makes circles repel each other
-      )
-      .alpha(1) // Reset the simulation's internal timer
-      .restart(); // Start the animation
-
-    // Draw lines connecting parent and child circles
-    const linkElements = svg
-      .selectAll(".link")
-      .data(links)
-      .join("line")
-      .attr("class", "link")
-      .style("stroke", "#999") // Gray color for links
-      .style("stroke-opacity", 0.6) // Make lines slightly transparent
-      .style("stroke-width", (d) => Math.sqrt(d.target.data.size)); // Thicker lines for bigger datasets
-
-    // Keep track of which circles should be visible:
-    // - All museum circles (depth 1)
-    // - The circle that was clicked (parent)
-    // - The new child circles that appeared
-    const allVisibleNodes = [
-      ...root
-        .descendants()
-        .slice(1)
-        .filter((n) => n.depth === 1), // Keep all museum nodes
-      parentNode, // Keep the clicked parent
-      ...newNodes, // Add new child nodes
-    ];
-
-    // Add circles to represent each node in our visualization
-    // Each circle represents either a museum or a collection within that museum
-    const nodeElements = svg
-      .selectAll(".node")
-      .data(allVisibleNodes) // Use our filtered list of nodes that should be visible
-      .join("circle") // Create/update/remove circles as needed
-      .attr("class", "node")
-      .attr("r", (d) => {
-        // Set the size (radius) of each circle based on its level in the hierarchy
-        if (d.depth === 1) return sizeScale(d.data.size); // Museum circles - size based on collection size
-        if (d.depth > 1) return childSizeScale(d.data.size); // Collection circles - smaller scale
-        return nodeRadius; // Default size for other circles
-      })
-      .style("fill", (d) => {
-        // Color code circles based on their level
-        if (d.depth === 2) return "red"; // First level collections are red
-        if (d.depth === 3) return "orange"; // Second level collections are orange
-        return "steelblue"; // Museums are blue
-      })
-      .style("cursor", "pointer") // Show pointer cursor on hover
-      .on("click", handleClick); // Make circles clickable
-
-    // Add text labels for each circle
-    const labelElements = svg
-      .selectAll(".label")
-      .data(allVisibleNodes)
-      .join("text") // Create/update/remove labels as needed
-      .attr("class", "label")
-      .style("text-anchor", "middle") // Center the text
-      .style("font-size", "12px")
-      .text((d) => d.data.name); // Show the name of the museum/collection
-
-    // This function runs continuously to update the positions of everything
-    // as the physics simulation moves the circles around
-    simulation.on("tick", () => {
-      // Update circle positions
-      nodeElements.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
-
-      // Update label positions (slightly above their circles)
-      labelElements
-        .attr("x", (d) => d.x)
-        .attr("y", (d) => {
-          const circleRadius =
-            d.depth === 1 ? sizeScale(d.data.size) : nodeRadius;
-          return d.y - circleRadius - 5; // Position label above the circle
-        });
-
-      // Update the connecting lines between circles
-      linkElements
-        .attr("x1", (d) => d.source.x) // Start point of line (parent circle)
-        .attr("y1", (d) => d.source.y)
-        .attr("x2", (d) => d.target.x) // End point of line (child circle)
-        .attr("y2", (d) => d.target.y);
-    });
-
-    // Add a force that arranges child nodes in a circle around their parent
-    const radialForce = d3
-      .forceRadial(
-        100, // Distance from parent (radius of the circle arrangement)
-        d.x, // Center point x (parent's position)
-        d.y // Center point y (parent's position)
-      )
-      .strength((d) => (d.depth === 2 ? 0.8 : 0)); // Only apply to direct children
-
-    // Add this radial arrangement force to our simulation
-    simulation.force("radial", radialForce);
-  }
-
-  //////////////////////////////// UPDATE VISUALIZATION ////////////////////////////////
-
-  // This function updates the visualization when the data changes
-  // It updates the nodes and labels to reflect the new data
-
-  function update() {
-    // Update the simulation with new nodes
-    simulation.nodes(root.descendants());
-
-    // Update nodes and labels
-    nodes
-      .data(root.descendants().slice(1))
-      .join("circle")
-      .attr("r", (d) => (d.depth === 1 ? sizeScale(d.data.size) : nodeRadius));
-
-    labels
-      .data(root.descendants().slice(1))
-      .join("text")
-      .text((d) => d.data.name);
-
-    // Restart simulation
-    simulation.alpha(1).restart();
-  }
-
-  //   // console log est_place found for each museum
-  //   museumGroups.forEach((entries, museum) => {
-  //     console.log(
-  //       `${museum} est_places:`,
-  //       entries.map((entry) => entry.est_place).filter((place) => place)
-  //     );
-  //   });
-
-  // console log each unique est_place per museum and count
-  museumGroups.forEach((entries, museum) => {
-    const placeCounts = entries.reduce((acc, entry) => {
-      if (entry.est_place) {
-        acc[entry.est_place] = (acc[entry.est_place] || 0) + 1;
-      }
-      return acc;
-    }, {});
-    console.log(`${museum} est_places:`, placeCounts);
+    createForceLayout(parentNode, childNodes);
   });
-});
+
+  currentChildCategory = selectedCategory;
+}
+
+////////////////////////////// INITIAL DATA LOAD ////////////////////////////////
+
+let data;
+
+d3.csv("final_data_cat_test.csv")
+  .then((loadedData) => {
+    data = loadedData;
+    console.log("Data Loaded:", data); // Debugging statement
+
+    updateVisualization(currentCategory, data);
+  })
+  .catch((error) => {
+    console.error("Error loading the data:", error);
+  });
