@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title class="title">Museum Visualization</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&family=Gantari:ital,wght@0,100..900;1,100..900&family=Kristi&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  </head>
+  <body>
+    <div id="header">
+      <div class="title">Piece By Piece</div>
+      <div class="H3">An exploration of fashion at The Smithsonian.</div>
+    </div>
+    <div id="sidebar">
+      <div class="category-filter">
+        <button class="button" data-category="Museum">Museum</button>
+        <button class="button" data-category="Medium">Medium</button>
+        <button class="button" data-category="est_place">est_place</button>
+        <button class="button" data-category="topic">topic</button>
+        <button class="button" data-category="est_year">est_year</button>
+      </div>
+      <br />
+      <br />
+      <div class="body-filter">
+        <button class="button">Whole Body</button>
+        <button class="button">Head & Neck</button>
+        <button class="button">Torso</button>
+        <button class="button">Legs</button>
+        <button class="button">Feet</button>
+      </div>
+    </div>
+
+    <div id="gallery-depth">
+      <!-- <ul id="gallery-list"></ul> -->
+    </div>
+
+    <div id="visualization"></div>
+
+    <div id="overlay">
+      <!-- <div class="active"></div> -->
+    </div>
+    <div id="collection"></div>
+    <script src="visualization.js"></script>
+    <script src="gallery-depth.js"></script>
+    <script src="overlay.js"></script>
+    <!-- <script src="gallery-depth2.js"></script> -->
+  </body>
+</html>

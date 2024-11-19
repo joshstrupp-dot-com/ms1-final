@@ -1,0 +1,208 @@
+/* BASE COLORS */
+
+:root {
+  --color-Museum: #bcbcbc;
+  --color-Medium: #8e82d9;
+  --color-est_place: #f20c1f;
+  --color-topic: #bfb521;
+  --color-est_year: #f27b13;
+  --color-base: #f2eeeb;
+  --color-base-overlay: #d9d9d9;
+  --color-base-light: #f2eeebe5;
+}
+
+/* FONTS */
+
+@font-face {
+  font-family: Avenue;
+  src: url(../fonts/Avenue.otf);
+}
+
+/* BASE STYLES */
+
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure full viewport coverage */
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  /* overflow: hidden; */
+  background-color: var(--color-base);
+}
+
+/* LAYOUT STYLES */
+
+#gallery-depth {
+  width: 80vw;
+  height: 100vh;
+  transition: width 0.3s ease; /* Add this for smooth transition */
+}
+
+.cat-selected {
+  width: 70vw !important; /* Add !important to ensure it overrides */
+  height: 100vh;
+}
+
+/* #gallery-depth2 {
+  width: 70vw;
+  height: 100vh;
+} */
+
+#visualization {
+  width: 10vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 70vw;
+  right: 20vw;
+  /* border: 1px solid var(--color-base-overlay); */
+  overflow: hidden;
+}
+
+#sidebar {
+  width: 20vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  border: 1px solid var(--color-base-overlay);
+  overflow: hidden;
+  background-color: #e1e1e1;
+}
+
+/* TYPE STYLES */
+
+#header {
+  padding: 20px;
+}
+
+.title {
+  font-family: Avenue;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: -0.55px;
+}
+
+.H3 {
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+}
+
+/* Overlay Styles */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-base);
+  opacity: 0; /* Initially hidden */
+  z-index: 100;
+  display: none; /* Initially hidden */
+  transition: opacity 0.3s ease, display 0.3s ease;
+}
+
+#overlay.active {
+  display: block; /* Show the overlay */
+  opacity: 0.95; /* Faded background */
+}
+
+/* GALLERY BASICS */
+#gallery-depth ul,
+.gallery-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 10px;
+}
+
+#gallery-depth li {
+  height: 20vh;
+  flex-grow: 1;
+  margin: 5px;
+  box-sizing: border-box;
+}
+
+#gallery-depth li:last-child {
+  flex-grow: 10;
+}
+
+#gallery-depth img,
+.gallery-list img {
+  max-height: 100%;
+  min-width: 100%;
+  object-fit: cover;
+  vertical-align: bottom;
+  border-radius: 4px;
+  transition: transform 0.2s;
+}
+
+.gallery-list img:hover {
+  transform: scale(1.05);
+}
+
+/* BUTTON STYLES */
+.button {
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background-color: #ddd;
+}
+
+.button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* RESPONSIVE LAYOUTS */
+/* Portrait */
+@media (max-aspect-ratio: 1/1) {
+  #gallery-depth li {
+    height: 30vh;
+  }
+}
+
+/* Short screens */
+@media (max-height: 480px) {
+  #gallery-depth li {
+    height: 80vh;
+  }
+}
+
+/* Smaller screens in portrait */
+@media (max-aspect-ratio: 1/1) and (max-width: 480px) {
+  #gallery-depth ul {
+    flex-direction: row;
+  }
+
+  #gallery-depth li {
+    height: auto;
+    width: 100%;
+  }
+
+  #gallery-depth img {
+    width: 100%;
+    max-height: 75vh;
+    min-width: 0;
+  }
+}
