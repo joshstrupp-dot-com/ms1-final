@@ -1,0 +1,75 @@
+/* BASE COLORS */
+
+:root {
+  --color-Medium: #8e82d9;
+  --color-Country: #f20c1f;
+  --color-Topic: #bfb521;
+  --color-Year: #f27b13;
+  --color-base: #f2eeeb;
+  --color-base-overlay: #d9d9d9;
+  --color-base-light: #f2eeebe5;
+}
+
+/* FONTS */
+
+@font-face {
+  font-family: Avenue;
+  src: url(../fonts/Avenue.otf);
+}
+
+/* BASE STYLES */
+
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure full viewport coverage */
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-base);
+}
+
+/* LAYOUT STYLES */
+
+#visualization {
+  width: 80vw;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 20vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-left: 1px solid var(--color-base-overlay);
+}
+/* TYPE STYLES */
+
+#header {
+  padding: 20px;
+}
+
+.title {
+  font-family: Avenue;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: -0.55px;
+}
+
+.H3 {
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+}
