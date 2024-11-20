@@ -52,11 +52,19 @@
 
 ## Visualization
 
+### Count Bar
+
 - Use D3 to create bar chart
   - category determines color
   - Height determined by count
   - Sorted ascending
 - If time: play with hover
+
+### Circular Packing
+
+- create dataset that counts number when grouped by category
+- counts, within given selection, and creates packed circles
+- Clicking on one will hightlight that coresponding image
 
 ## Overlay
 
@@ -77,3 +85,5 @@
 # Data Updates
 
 - Consider changing current guesses like "topic" or "Medium" for something more proven, e.g. color.
+- "Topic" should JUST come from "See more items in" as they all have it.
+- Ensure supercategory is also exported

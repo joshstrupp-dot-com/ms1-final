@@ -77,11 +77,46 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.appendChild(overlayImage);
         overlay.classList.add("active");
 
-        // Add close button
+        // Create text box div
+        const textBox = document.createElement("div");
+        textBox.classList.add("text-box");
+
+        // Create formatted content with proper styling
+        textBox.innerHTML = `
+                 <h2 class="title">${rowData.Title || "Untitled"}</h2>
+                 <div class="metadata">
+                   <p class="H3"><strong>Museum:</strong> ${
+                     rowData.Museum || "Unknown"
+                   }</p>
+                   <p class="H3"><strong>Medium:</strong> ${
+                     rowData.Medium || "Unknown"
+                   }</p>
+                   <p class="H3"><strong>Place:</strong> ${
+                     rowData.est_place || "Unknown"
+                   }</p>
+                   <p class="H3"><strong>Topic:</strong> ${
+                     rowData.topic || "Unknown"
+                   }</p>
+                   <p class="H3"><strong>Year:</strong> ${
+                     rowData.est_year || "Unknown"
+                   }</p>
+                   <p class="H3 description"><strong>Description:</strong> ${
+                     rowData.description || "No description available"
+                   }</p>
+                 </div>
+               `;
+
+        // Add text box to overlay
+        overlay.appendChild(textBox);
+
+        // Create close button
         const closeButton = document.createElement("button");
         closeButton.textContent = "×";
         closeButton.className = "overlay-close";
         overlay.appendChild(closeButton);
+
+        // Show overlay
+        overlay.classList.add("active");
 
         // Add click handler to close button
         closeButton.addEventListener("click", function (e) {
