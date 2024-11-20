@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
   closeButton.textContent = "×"; // Using × symbol for close
   closeButton.classList.add("button");
   closeButton.style.cssText = `
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 20px;
     font-size: 24px;
@@ -47,5 +47,53 @@ document.addEventListener("DOMContentLoaded", function () {
     e.stopPropagation(); // Prevent event from bubbling to overlay
     overlay.classList.remove("active");
     console.log("Overlay closed via button");
+
+    // Add click event listener to gallery images to show metadata
+    document.addEventListener("click", function (e) {
+      if (e.target.matches("#gallery-depth li img")) {
+        const clickedImage = e.target;
+        const rowData = {
+          Museum: clickedImage.dataset.museum,
+          Medium: clickedImage.dataset.medium,
+          est_place: clickedImage.dataset.est_place,
+          topic: clickedImage.dataset.topic,
+          est_year: clickedImage.dataset.est_year,
+          title: clickedImage.dataset.title,
+          description: clickedImage.dataset.description,
+          img_url: clickedImage.src,
+          cropped_image_path: clickedImage.dataset.cropped_image_path,
+          "Bounding Box": clickedImage.dataset.bounding_box,
+          Area: clickedImage.dataset.area,
+          Title: clickedImage.dataset.title,
+        };
+
+        console.log("Clicked image metadata:", rowData);
+        // Clear any existing content in overlay
+        overlay.innerHTML = "";
+
+        // Create and display image in overlay
+        const overlayImage = document.createElement("img");
+        overlayImage.src = clickedImage.src;
+        overlay.appendChild(overlayImage);
+        overlay.classList.add("active");
+
+        // Add close button
+        const closeButton = document.createElement("button");
+        closeButton.textContent = "×";
+        closeButton.className = "overlay-close";
+        overlay.appendChild(closeButton);
+
+        // Add click handler to close button
+        closeButton.addEventListener("click", function (e) {
+          e.stopPropagation(); // Prevent event from bubbling to overlay
+          overlay.classList.remove("active");
+        });
+      }
+    });
+
+    // Add click handler to overlay itself
+    overlay.addEventListener("click", function () {
+      overlay.classList.remove("active");
+    });
   });
 });

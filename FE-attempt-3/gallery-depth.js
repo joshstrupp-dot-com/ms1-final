@@ -76,9 +76,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const li = document.createElement("li");
         const img = document.createElement("img");
 
+        // Set source and basic attributes
         img.src = item.Image_URL;
         img.alt = item.Title || "Image";
         img.loading = "lazy";
+
+        // Set data attributes from CSV data
+        img.dataset.museum = item.Museum;
+        img.dataset.medium = item.Medium;
+        img.dataset.est_place = item.est_place;
+        img.dataset.topic = item.topic;
+        img.dataset.est_year = item.est_year;
+        img.dataset.title = item.Title;
+        img.dataset.description = item.Description;
+        img.dataset.cropped_image_path = item.cropped_image_path;
+        img.dataset.bounding_box = item.bounding_box;
+        img.dataset.area = item.Area;
 
         li.appendChild(img);
         ul.appendChild(li);
@@ -114,6 +127,28 @@ document.addEventListener("DOMContentLoaded", function () {
         img.src = item.Image_URL;
         img.alt = item.Title || "Image";
         img.loading = "lazy";
+
+        // Set data attributes from CSV data
+        img.dataset.museum = item.Museum;
+        img.dataset.medium = item.Medium;
+        img.dataset.est_place = item.est_place;
+        img.dataset.topic = item.topic;
+        img.dataset.est_year = item.est_year;
+        img.dataset.title = item.Title;
+        img.dataset.description = item.Description;
+        img.dataset.cropped_image_path = item.cropped_image_path;
+        img.dataset.bounding_box = item.bounding_box;
+        img.dataset.area = item.Area;
+
+        // Debug log to verify data is being set
+        console.log("Setting data attributes for image:", {
+          museum: item.Museum,
+          medium: item.Medium,
+          est_place: item.est_place,
+          topic: item.topic,
+          est_year: item.est_year,
+          title: item.Title,
+        });
 
         li.appendChild(img);
         ul.appendChild(li);

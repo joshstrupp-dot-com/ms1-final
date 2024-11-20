@@ -119,6 +119,13 @@ body {
   opacity: 0.95; /* Faded background */
 }
 
+#overlay.active img {
+  max-height: 90vh;
+  max-width: 45vw;
+  margin: 50px;
+  object-fit: contain;
+}
+
 /* GALLERY BASICS */
 #gallery-depth ul,
 .gallery-list {
