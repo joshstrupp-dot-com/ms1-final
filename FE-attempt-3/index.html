@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title class="title">Museum Visualization</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -29,13 +29,13 @@
       </div>
       <br />
       <br />
-      <div class="body-filter">
+      <!-- <div class="body-filter">
         <button class="button">Whole Body</button>
         <button class="button">Head & Neck</button>
         <button class="button">Torso</button>
         <button class="button">Legs</button>
         <button class="button">Feet</button>
-      </div>
+      </div> -->
       <div id="visualization-circles"></div>
     </div>
 
@@ -43,14 +43,16 @@
       <!-- <ul id="gallery-list"></ul> -->
     </div>
 
-    <div id="visualization"></div>
+    <div id="visualization-bar"></div>
 
     <div id="overlay">
       <!-- <div class="active"></div> -->
     </div>
     <div id="collection"></div>
-    <script src="visualization-bar.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="dataLoader.js"></script>
     <script src="gallery-depth.js"></script>
+    <script src="visualization-bar.js"></script>
     <script src="overlay.js"></script>
     <script src="visualization-circles.js"></script>
     <!-- <script src="gallery-depth2.js"></script> -->

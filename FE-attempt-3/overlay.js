@@ -1,11 +1,11 @@
 // File: FE-attempt-3/overlay.js
 
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Overlay script loaded");
+  // console.log("Overlay script loaded");
 
   // Select the overlay element directly
   const overlay = document.querySelector("#overlay");
-  console.log("Overlay element:", overlay);
+  // console.log("Overlay element:", overlay);
 
   // Check if the overlay exists
   if (!overlay) {
