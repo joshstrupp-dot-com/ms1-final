@@ -1,4 +1,4 @@
-import CONFIG from "./config.js";
+import { CONFIG } from "./config.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   const ITEMS_PER_PAGE = CONFIG.ITEMS_PER_PAGE; // Number of images to load at once
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Set a data attribute for the real image URL
       img.dataset.src = item.Image_URL;
-      img.src = "placeholder-image.jpg"; // Placeholder
+      img.src = CONFIG.PLACEHOLDER_IMAGE; // Placeholder
 
       img.alt = item.Title || "Image";
 
