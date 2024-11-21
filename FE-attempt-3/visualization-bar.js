@@ -133,23 +133,29 @@ document.addEventListener("DOMContentLoaded", function () {
     // Listen for the custom 'categoryChanged' event
     document.addEventListener("categoryChanged", function (e) {
       const category = e.detail.trim();
+      const galleryDepth = document.getElementById("gallery-depth");
 
       console.log(`Received categoryChanged event: ${category}`);
 
+      if (category.toLowerCase() === "collection") {
+        // Handle Collection category separately if needed
+        console.log("Collection category selected");
+        // Choose not to remove visualization for 'collection'
+        // Or handle any specific behavior
+        return; // Exit early to avoid removing visualization
+      }
+
       if (category.toLowerCase() === "all") {
-        // Remove visualization when "all" is selected
+        // Optionally, you can decide whether to keep or remove visualizations for 'all'
         removeVisualization();
+        galleryDepth.classList.remove("cat-selected");
       } else {
-        // Group the data by the selected category
-        const groupedData = d3.group(allData, (d) => d[category]);
-
-        // Log counts for each value in the category
-        console.log(`\nCounts for ${category}:`);
-        groupedData.forEach((items, groupName) => {
-          console.log(`${groupName}: ${items.length} items`);
-        });
-
-        // Draw new visualization
+        // For other categories, add 'cat-selected' and show visualization
+        galleryDepth.classList.add("cat-selected");
+        const groupedData = d3.group(
+          window.dataStore.allData,
+          (d) => d[category]
+        );
         drawVisualization(category, groupedData);
         console.log("Visualization drawn");
       }
