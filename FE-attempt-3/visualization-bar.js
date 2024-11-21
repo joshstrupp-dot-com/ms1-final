@@ -75,10 +75,32 @@ document.addEventListener("DOMContentLoaded", function () {
         .enter()
         .append("rect")
         .attr("class", "bars")
+        .style("cursor", "pointer")
         .attr("y", (d) => yScale(d[0]))
         .attr("height", yScale.bandwidth())
         .attr("x", (d) => chartWidth - xScale(d[1].length)) // Position from right
         .attr("width", (d) => xScale(d[1].length)) // Width based on data
+        // Add click handler
+        .on("click", function (event, d) {
+          // Find the corresponding h3 element
+          const targetH3 = Array.from(document.getElementsByTagName("h3")).find(
+            (h3) => h3.textContent === d[0]
+          );
+
+          if (targetH3) {
+            // Smooth scroll to the h3
+            targetH3.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+
+            // Optional: Add a highlight effect to the h3
+            targetH3.style.backgroundColor = "#ffeb3b";
+            setTimeout(() => {
+              targetH3.style.backgroundColor = "transparent";
+            }, 2000);
+          }
+        })
         .on("mouseover", function (event, d) {
           tooltip.transition().duration(200).style("opacity", 0.9);
           tooltip
