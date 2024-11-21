@@ -1,7 +1,10 @@
 # Prototype
 ## Design Updates
-![image](https://github.com/user-attachments/assets/6f851060-8f9d-4eb6-ae03-93cf4f314fae)
-![image](https://github.com/user-attachments/assets/79a00929-8dc6-4499-9a96-90bba5e01a0a)
+![image](https://github.com/user-attachments/assets/c0ee5f9a-d6b1-40dc-9d57-efea29d85cf1)
+
+![image](https://github.com/user-attachments/assets/3515deb8-9d6a-4176-a572-3c853ff202dd)
+
+
 ![image](https://github.com/user-attachments/assets/69f1498e-6f19-4b8c-b7ca-a31626331ce9)
 ![image](https://github.com/user-attachments/assets/5cfc5f56-4d0b-4e15-b731-bc176098dda7)
 
