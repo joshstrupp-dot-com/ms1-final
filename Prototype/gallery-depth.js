@@ -1,5 +1,7 @@
+import CONFIG from "./config.js";
+
 document.addEventListener("DOMContentLoaded", function () {
-  const ITEMS_PER_PAGE = 100; // Number of images to load at once
+  const ITEMS_PER_PAGE = CONFIG.ITEMS_PER_PAGE; // Number of images to load at once
   let currentPage = 1;
   let isLoading = false;
   let currentCategory = "all";
@@ -155,7 +157,13 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Add click handlers for all category buttons
-  const categoryButtons = Array.from(document.querySelectorAll(".button"));
+  const categoryButtons = CONFIG.CATEGORIES.map((category) => {
+    const button = document.createElement("button");
+    button.className = "button";
+    button.dataset.category = category;
+    button.textContent = category;
+    return button;
+  });
 
   categoryButtons.forEach((button) => {
     button.addEventListener("click", () => {

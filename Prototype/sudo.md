@@ -4,8 +4,7 @@
 - Consider changing current guesses like "Medium" for something more proven, e.g. color.
 - Consider re-categorizing using LlamaIndex - which should be able to parse csv, add new entry based on prompt
 - Ensure supercategory is also exported, and change from "name"
-- adjust current final csv so that entries from cropped_images folder that do not have copped_image found are still in dataset. Perhaps use pickle checkpoints to identify data associated with those images?
-- When doing data collection, adjust so that entry into final csv includes entries that don't necessarily have fashionpedia recognition.
+- Lower confidence level?
 
 ## Gallery
 

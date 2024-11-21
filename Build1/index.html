@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title class="title">Museum Visualization</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&family=Gantari:ital,wght@0,100..900;1,100..900&family=Kristi&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script type="module" src="init.js"></script>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="utils.js"></script>
+  </head>
+  <body>
+    <div id="header">
+      <div class="title">Piece By Piece</div>
+      <div class="H3">An exploration of fashion at The Smithsonian.</div>
+    </div>
+    <div id="collection"></div>
+    <div id="sidebar">
+      <div class="category-filter">
+        <button class="button" data-category="Museum">Museum</button>
+        <button class="button" data-category="Medium">Medium</button>
+        <button class="button" data-category="est_place">est_place</button>
+        <button class="button" data-category="topic">topic</button>
+        <button class="button" data-category="est_year">est_year</button>
+      </div>
+      <br />
+      <br />
+      <button class="button collection-button">Collection</button>
+      <div id="visualization-circles"></div>
+    </div>
+
+    <div id="gallery-depth">
+      <!-- <ul id="gallery-list"></ul> -->
+    </div>
+
+    <div id="visualization-bar"></div>
+
+    <div id="overlay">
+      <!-- <div class="active"></div> -->
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="module" src="dataLoader.js"></script>
+    <script type="module" src="gallery-depth.js"></script>
+    <script type="module" src="visualization-bar.js"></script>
+    <script type="module" src="overlay.js"></script>
+    <script type="module" src="visualization-circles.js"></script>
+    <script type="module" src="collection.js"></script>
+  </body>
+</html>
