@@ -2,7 +2,9 @@
 ## Design Updates
 ![image](https://github.com/user-attachments/assets/c0ee5f9a-d6b1-40dc-9d57-efea29d85cf1)
 
-![image](https://github.com/user-attachments/assets/3515deb8-9d6a-4176-a572-3c853ff202dd)
+![image](https://github.com/user-attachments/assets/d74098b2-1812-42c7-9aac-df85c2f663f8)
+
+
 
 
 ![image](https://github.com/user-attachments/assets/69f1498e-6f19-4b8c-b7ca-a31626331ce9)
