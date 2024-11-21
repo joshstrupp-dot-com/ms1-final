@@ -13,7 +13,7 @@
 ![image](https://github.com/user-attachments/assets/5cfc5f56-4d0b-4e15-b731-bc176098dda7)
 
 ## Prototype Link
-https://joshstrupp-dot-com.github.io/ms1-final/FE-attempt-3/
+https://joshstrupp-dot-com.github.io/ms1-final/Prototype/
 
 
 
