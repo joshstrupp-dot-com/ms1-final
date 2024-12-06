@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scroll Animation</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f2eeeb;
+        font-family: Arial, sans-serif;
+        overflow-x: hidden;
+      }
+
+      .container {
+        display: flex;
+        min-height: 400vh; /* Adjust based on desired scroll length */
+      }
+
+      .text-column {
+        width: 50%;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden; /* Prevent text overflow */
+      }
+
+      .animation-column {
+        width: 50%;
+        position: fixed;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #sequence-container {
+        width: 100%;
+        height: 100vh; /* Changed to full viewport height */
+        position: relative;
+        display: flex;
+        align-items: center; /* Center vertically */
+      }
+
+      #sequence-container img {
+        width: 100%;
+        height: 80vh;
+        position: absolute;
+        left: 0;
+        opacity: 0;
+        object-fit: contain;
+      }
+
+      #sequence-container img.visible {
+        opacity: 1;
+      }
+
+      /* Modified transition for text */
+      .dynamic-text {
+        position: fixed;
+        top: 50vh;
+        left: 25%;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        text-align: center;
+        max-width: calc(
+          50vw - 4rem
+        ); /* Match text column width minus padding */
+        width: 100%;
+        word-wrap: break-word; /* Allow text to wrap */
+        margin: 0;
+        padding: 0 1rem;
+        opacity: 1;
+      }
+
+      .dynamic-text.visible {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+
+      .dynamic-text.hidden {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="text-column">
+        <!-- Dynamic Text Elements -->
+        <h1 id="text1" class="dynamic-text visible">
+          Introduce a singular artifact from the collection.
+        </h1>
+        <h1 id="text2" class="dynamic-text hidden">
+          Emphasize its significance, why it's historically relevant.
+        </h1>
+      </div>
+      <div class="animation-column">
+        <div id="sequence-container"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById("sequence-container");
+        const frameCount = 149;
+        const baseNumber = 1000;
+        const images = [];
+        let currentFrame = 0;
+        let textTransitioned = false;
+
+        // Get references to the dynamic text elements
+        const text1 = document.getElementById("text1");
+        const text2 = document.getElementById("text2");
+
+        // Preload images
+        for (let i = 0; i <= frameCount; i++) {
+          const img = new Image();
+          const frameNumber = baseNumber + i;
+          img.src = `../archive/png-seq-assets/sequence1/sequence${frameNumber}.png`;
+          img.classList.add(i === 0 ? "visible" : "hidden");
+          container.appendChild(img);
+          images.push(img);
+        }
+
+        // Update frame based on scroll position
+        window.addEventListener("scroll", () => {
+          const scrollTop = window.scrollY;
+          const maxScroll =
+            document.documentElement.scrollHeight - window.innerHeight;
+          const scrollFraction = scrollTop / maxScroll;
+          const frameIndex = Math.min(
+            frameCount - 1,
+            Math.floor(scrollFraction * frameCount)
+          );
+
+          // Update image sequence
+          if (frameIndex !== currentFrame) {
+            images[currentFrame].classList.remove("visible");
+            images[currentFrame].classList.add("hidden");
+            images[frameIndex].classList.remove("hidden");
+            images[frameIndex].classList.add("visible");
+
+            // Ensure text1 is visible when frame index is less than 50
+            if (frameIndex < 50) {
+              text2.classList.remove("visible");
+              text2.classList.add("hidden");
+              text1.classList.remove("hidden");
+              text1.classList.add("visible");
+              textTransitioned = false;
+            }
+            // Show text2 when frame index is 50 or greater
+            else if (frameIndex >= 50 && !textTransitioned) {
+              text1.classList.remove("visible");
+              text1.classList.add("hidden");
+
+              setTimeout(() => {
+                text2.classList.remove("hidden");
+                text2.classList.add("visible");
+              }, 300);
+
+              textTransitioned = true;
+            }
+
+            currentFrame = frameIndex;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

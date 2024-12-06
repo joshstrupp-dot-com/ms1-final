@@ -18,11 +18,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // Store the current grouped data structure
   let currentGroupedData;
 
+  // === Start: Add Filter State Variables ===
+  let currentFilter = null; // Holds the current filter name (e.g., "lapel")
+  let filteredItemsLoaded = false; // Flag to prevent multiple full loads
+  // === End: Add Filter State Variables ===
+
   // Helper function to add images to the page
   function renderImages(items, ul, startIndex, endIndex) {
     items.slice(startIndex, endIndex).forEach((item) => {
       const li = document.createElement("li");
-      li.setAttribute("data-name", item[CONFIG.DATA_KEYS.NAME]);
+      li.setAttribute("data-name", item[CONFIG.DATA_KEYS.NAME]); // Add data-name attribute
       const imageWrapper = createImageElement(item);
       li.appendChild(imageWrapper);
       ul.appendChild(li);
@@ -32,26 +37,101 @@ document.addEventListener("DOMContentLoaded", function () {
     observeImages(ul.querySelectorAll("img"));
   }
 
+  // === Start: Add applyFilter and clearFilter Functions ===
+  /**
+   * Applies a filter to show only items matching the filterName.
+   * @param {string} filterName - The name to filter by (e.g., "lapel").
+   */
+  function applyFilter(filterName) {
+    currentFilter = filterName;
+    filteredItemsLoaded = false; // Reset the flag
+
+    // Clear existing gallery
+    const galleryDepth = document.getElementById("gallery-depth");
+    galleryDepth.innerHTML = "";
+
+    // Create the gallery structure for the filtered category
+    const groupName = filterName; // Assuming each filter corresponds to a single name
+    const categoryLabel = document.createElement("h3");
+    categoryLabel.textContent = groupName;
+    galleryDepth.appendChild(categoryLabel);
+
+    const ul = document.createElement("ul");
+    ul.className = "gallery-list";
+    galleryDepth.appendChild(ul);
+
+    // Load all items for this filter
+    loadAllFilteredImages(filterName);
+  }
+
+  /**
+   * Clears any active filters and restores the full gallery view.
+   */
+  function clearFilter() {
+    currentFilter = null;
+    filteredItemsLoaded = false;
+
+    // Reset pagination
+    currentPage = 1;
+
+    // Clear existing gallery
+    const galleryDepth = document.getElementById("gallery-depth");
+    galleryDepth.innerHTML = "";
+
+    // Create the gallery structure for "all"
+    const ul = document.createElement("ul");
+    ul.className = "gallery-list";
+    galleryDepth.appendChild(ul);
+
+    // Load the first page of all items
+    loadMoreImages();
+  }
+
+  /**
+   * Loads all images that match the specified filterName.
+   * @param {string} filterName - The name to filter by.
+   */
+  function loadAllFilteredImages(filterName) {
+    if (filteredItemsLoaded) return; // Prevent multiple loads
+
+    const galleryDepth = document.getElementById("gallery-depth");
+    const ul = galleryDepth.querySelector(".gallery-list");
+
+    // Filter items based on the selected name
+    const filteredItems = window.dataStore.allData.filter(
+      (item) => item[CONFIG.DATA_KEYS.NAME] === filterName
+    );
+
+    // Render all filtered images at once
+    renderImages(filteredItems, ul, 0, filteredItems.length);
+
+    filteredItemsLoaded = true;
+  }
+  // === End: Add applyFilter and clearFilter Functions ===
+
   // Load more images when user scrolls near bottom
   function loadMoreImages() {
     if (isLoading) return;
     isLoading = true;
 
+    const galleryDepth = document.getElementById("gallery-depth");
+
+    if (currentFilter) {
+      // If a filter is active, do not paginate; items are loaded via loadAllFilteredImages
+      isLoading = false;
+      return;
+    }
+
     // Calculate which items to show based on current page
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const galleryDepth = document.getElementById("gallery-depth");
+    const endIndex = startIndex + ITEMS_PER_PAGE;
 
     // If showing all items, add them to main list
     if (currentCategory.toLowerCase() === "all") {
       const ul = galleryDepth.querySelector(".gallery-list");
-      renderImages(
-        window.dataStore.allData,
-        ul,
-        startIndex,
-        startIndex + ITEMS_PER_PAGE
-      );
+      renderImages(window.dataStore.allData, ul, startIndex, endIndex);
     } else {
-      // If filtered by category, add items to their category sections
+      // If grouped by category, add items to their category sections
       currentGroupedData.forEach((items, groupName) => {
         const groupSection = Array.from(galleryDepth.children).find(
           (el) => el.tagName === "H3" && el.textContent === groupName
@@ -59,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (groupSection) {
           const ul = groupSection.nextElementSibling;
-          renderImages(items, ul, startIndex, startIndex + ITEMS_PER_PAGE);
+          renderImages(items, ul, startIndex, endIndex);
         }
       });
     }
@@ -69,11 +149,28 @@ document.addEventListener("DOMContentLoaded", function () {
     isLoading = false;
   }
 
+  // === Start: Listen for 'filterChanged' Event ===
+  document.addEventListener("filterChanged", function (e) {
+    const filterName = e.detail.name; // The name to filter by (e.g., "lapel")
+
+    if (filterName) {
+      // Apply the filter
+      applyFilter(filterName);
+    } else {
+      // Clear the filter
+      clearFilter();
+    }
+  });
+  // === End: Listen for 'filterChanged' Event ===
+
   // Reset and rebuild the gallery when category changes
   function renderGallery(category) {
     // Reset to first page
     currentPage = 1;
     currentCategory = category;
+    currentFilter = null; // Clear any active filter
+    filteredItemsLoaded = false;
+
     const galleryDepth = document.getElementById("gallery-depth");
     galleryDepth.innerHTML = "";
 

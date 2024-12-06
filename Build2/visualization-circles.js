@@ -111,46 +111,27 @@ document.addEventListener("DOMContentLoaded", function () {
       .on("mouseleave", mouseleave)
       // Add click event handler
       .on("click", function (event, d) {
-        // Log the clicked circle's data
-        console.log("Circle clicked:", {
-          name: d.name,
-          count: d.count,
-          items: allData.filter((item) => item.Name === d.name),
-        });
+        // Determine if the clicked circle is already active
+        const isActive = d3.select(this).classed("active-circle");
 
-        // Get the circle's color
-        const circleColor = color(d.name);
+        // Remove active class from all circles
+        node.classed("active-circle", false);
 
-        // Select all <li> elements in the gallery
-        const allGalleryLi = document.querySelectorAll(
-          `#gallery-depth .gallery-list li`
-        );
+        if (!isActive) {
+          // Add active class to the clicked circle
+          d3.select(this).classed("active-circle", true);
 
-        if (currentlySelectedName === d.name) {
-          // **Toggle Off:** Deselect and show all images
-          allGalleryLi.forEach((li) => {
-            // Remove border
-            li.style.border = "2px solid transparent";
-            // Show all images
-            li.style.display = "flex"; // Adjust based on your CSS layout
+          // Dispatch filter event
+          const filterEvent = new CustomEvent("filterChanged", {
+            detail: { name: d.name },
           });
-          currentlySelectedName = null;
+          document.dispatchEvent(filterEvent);
         } else {
-          // **Toggle On:** Highlight matching images and hide others
-          allGalleryLi.forEach((li) => {
-            if (li.getAttribute("data-name") === d.name) {
-              // Add border with circle's color
-              li.style.border = `3px solid ${circleColor}`;
-              // Show the image
-              li.style.display = "flex"; // Adjust based on your CSS layout
-            } else {
-              // Remove any existing border
-              li.style.border = "2px solid transparent";
-              // Hide non-matching images
-              li.style.display = "none";
-            }
+          // Dispatch event to clear filter
+          const clearFilterEvent = new CustomEvent("filterChanged", {
+            detail: { name: null },
           });
-          currentlySelectedName = d.name;
+          document.dispatchEvent(clearFilterEvent);
         }
       })
       .call(
@@ -204,4 +185,15 @@ document.addEventListener("DOMContentLoaded", function () {
       d.fy = null;
     }
   });
+});
+document.addEventListener("filterChanged", function (e) {
+  const filterName = e.detail.name; // The name to filter by (e.g., "lapel")
+
+  if (filterName) {
+    // Apply the filter
+    applyFilter(filterName);
+  } else {
+    // Clear the filter
+    clearFilter();
+  }
 });
