@@ -1,0 +1,419 @@
+/*------------------------------------
+  BASE STYLES
+------------------------------------*/
+
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base colors */
+:root {
+  --color-Museum: #bcbcbc;
+  --color-Medium: #8e82d9;
+  --color-est_place: #f20c1f;
+  --color-topic: #bfb521;
+  --color-est_year: #f27b13;
+  --color-base: #f2eeeb;
+  --color-base-overlay: #d9d9d9;
+  --color-base-light: #f2eeebe5;
+}
+
+/* Fonts */
+@font-face {
+  font-family: Avenue;
+  src: url(../fonts/Avenue.otf);
+}
+
+/* Ensure full viewport coverage */
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-base);
+}
+
+/*------------------------------------
+  LAYOUT STYLES
+------------------------------------*/
+
+/* Main gallery */
+#gallery-depth {
+  width: 80vw;
+  height: 100vh;
+  transition: width 0.3s ease;
+}
+
+#gallery-depth.cat-selected {
+  width: 70vw;
+}
+
+/* Visualization bar */
+#visualization-bar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 70vw;
+  right: 20vw;
+  overflow: hidden;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 20vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  border: 1px solid var(--color-base-overlay);
+  overflow: hidden;
+  background-color: #e1e1e1;
+}
+
+#sidebar #visualization-circles {
+  width: 100%;
+  height: 50vh;
+  position: absolute;
+  bottom: 0;
+}
+
+/*------------------------------------
+  TYPOGRAPHY STYLES
+------------------------------------*/
+
+#header {
+  padding: 20px;
+}
+
+.title {
+  font-family: Avenue;
+  font-size: 50px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: -0.55px;
+}
+
+.h3 {
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+}
+
+/*------------------------------------
+  OVERLAY STYLES
+------------------------------------*/
+
+#overlay,
+#collection {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 100;
+  visibility: hidden;
+  transition: visibility 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+/* Semi-transparent background */
+#overlay::before,
+#collection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-base);
+  opacity: 0.95;
+  z-index: -1;
+}
+
+#overlay.active,
+#collection.active {
+  visibility: visible;
+}
+
+/* Close button */
+.overlay-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 101;
+}
+
+/* Overlay content */
+#overlay.active .text-box {
+  background-color: white;
+  height: 90vh;
+  opacity: 0.5;
+  width: 35vw;
+  padding: 2rem;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+#overlay.active img {
+  max-width: 45vw;
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.collection-title {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Avenue;
+  font-size: 50px;
+  color: black;
+  margin: 0;
+  padding: 0;
+}
+
+/*------------------------------------
+  GALLERY STYLES
+------------------------------------*/
+
+#gallery-depth ul,
+.gallery-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 10px;
+}
+
+#gallery-depth li,
+.gallery-list li {
+  height: 20vh;
+  flex-grow: 1;
+  margin: 5px;
+  box-sizing: border-box;
+  background-color: #f0f0f0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Last item in gallery */
+#gallery-depth li:last-child {
+  flex-grow: 10;
+}
+
+#gallery-depth img,
+.gallery-list img {
+  max-height: 100%;
+  min-width: 100%;
+  object-fit: contain;
+  vertical-align: bottom;
+  border-radius: 4px;
+  transition: transform 0.2s, opacity 1s ease;
+  opacity: 1;
+}
+
+/* .gallery-list img:hover {
+  transform: scale(1.05);
+} */
+
+/* Placeholder styles */
+li::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.bounding-box {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* Show bounding box on hover #gallery-depth li:hover .bounding-box,
+.gallery-list li:hover .bounding-box {
+  opacity: 1;
+} */
+
+/*------------------------------------
+  BUTTON STYLES
+------------------------------------*/
+
+/* General button */
+.button {
+  padding: 10px 20px;
+  margin: 5px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background-color: #ddd;
+}
+
+.button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* "+ Add to Collection" button */
+.add-to-collection {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.add-to-collection:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.add-to-collection.clicked {
+  background-color: #4caf50;
+  color: white;
+  pointer-events: none;
+  cursor: default;
+}
+
+.add-to-collection.clicked::before {
+  content: "✓ ";
+}
+
+/* Image container */
+.image-container {
+  position: relative;
+}
+
+/*------------------------------------
+  VISUALIZATION STYLES
+------------------------------------*/
+
+.bars {
+  fill: steelblue;
+}
+
+.node:hover {
+  stroke-width: 7px !important;
+  opacity: 1 !important;
+}
+
+.visualization-tooltip {
+  opacity: 0;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 8px;
+  position: absolute;
+  pointer-events: none;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.visualization-circle {
+  transition: stroke-width 0.2s ease;
+  cursor: pointer;
+}
+
+.visualization-circle:hover {
+  stroke: black;
+  stroke-width: 2px;
+}
+
+/*------------------------------------
+  COLLECTION STYLES
+------------------------------------*/
+
+#collection-images {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#collection-images img {
+  position: absolute;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+/*------------------------------------
+  ANIMATIONS
+------------------------------------*/
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/*------------------------------------
+  RESPONSIVE STYLES
+------------------------------------*/
+
+/* Portrait */
+@media (max-aspect-ratio: 1/1) {
+  #gallery-depth li {
+    height: 30vh;
+  }
+}
+
+/* Short screens */
+@media (max-height: 480px) {
+  #gallery-depth li {
+    height: 80vh;
+  }
+}
+
+/* Smaller screens in portrait */
+@media (max-aspect-ratio: 1/1) and (max-width: 480px) {
+  #gallery-depth ul {
+    flex-direction: row;
+  }
+
+  #gallery-depth li {
+    height: auto;
+    width: 100%;
+  }
+
+  #gallery-depth img {
+    width: 100%;
+    max-height: 75vh;
+    min-width: 0;
+  }
+}

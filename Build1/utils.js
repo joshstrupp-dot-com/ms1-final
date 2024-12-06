@@ -25,3 +25,22 @@ export function observeImages(images) {
     observer.observe(img);
   });
 }
+
+export function createImageElement(item, options = {}) {
+  const img = document.createElement("img");
+  img.width = options.width || 200;
+  img.height = options.height || 200;
+  img.dataset.src = item[CONFIG.DATA_KEYS.IMAGE_URL];
+  img.src = options.placeholder || "placeholder-image.jpg";
+  img.alt = item[CONFIG.DATA_KEYS.TITLE] || "Image";
+
+  // Set additional data attributes based on CONFIG.DATA_KEYS
+  Object.keys(CONFIG.DATA_KEYS).forEach((key) => {
+    const dataKey = CONFIG.DATA_KEYS[key];
+    if (item[dataKey]) {
+      img.dataset[key.toLowerCase()] = item[dataKey];
+    }
+  });
+
+  return img;
+}

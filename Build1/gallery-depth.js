@@ -1,5 +1,5 @@
 import { CONFIG } from "./config.js";
-import { observeImages } from "./utils.js";
+import { observeImages, createImageElement } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
   const ITEMS_PER_PAGE = CONFIG.ITEMS_PER_PAGE; // Number of images to load at once
@@ -11,35 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderImages(items, ul, startIndex, endIndex) {
     items.slice(startIndex, endIndex).forEach((item) => {
       const li = document.createElement("li");
-      const img = document.createElement("img");
-
-      // Set dimensions
-      img.width = 200;
-      img.height = 200;
-
-      // Set a data attribute for the real image URL
-      img.dataset.src = item.Image_URL;
-      img.src = "placeholder-image.jpg"; // Placeholder
-
-      img.alt = item.Title || "Image";
-
-      // Set data attributes from CSV data
-      img.dataset.museum = item[CONFIG.DATA_KEYS.MUSEUM];
-      img.dataset.medium = item[CONFIG.DATA_KEYS.MEDIUM];
-      img.dataset.est_place = item[CONFIG.DATA_KEYS.EST_PLACE];
-      img.dataset.topic = item[CONFIG.DATA_KEYS.TOPIC];
-      img.dataset.est_year = item[CONFIG.DATA_KEYS.EST_YEAR];
-      img.dataset.title = item[CONFIG.DATA_KEYS.TITLE];
-      img.dataset.description = item[CONFIG.DATA_KEYS.DESCRIPTION];
-      img.dataset.cropped_image_path = item.cropped_image_path;
-      img.dataset.bounding_box = item[CONFIG.DATA_KEYS.BOUNDING_BOX];
-      img.dataset.area = item[CONFIG.DATA_KEYS.AREA];
-
+      const img = createImageElement(item);
       li.appendChild(img);
       ul.appendChild(li);
     });
 
-    // After appending, observe the images
     observeImages(ul.querySelectorAll("img"));
   }
 
