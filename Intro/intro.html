@@ -85,6 +85,37 @@
         transform: translate(-50%, -40%);
         pointer-events: none;
       }
+
+      .enter-button {
+        position: fixed;
+        top: 50vh;
+        left: 25%;
+        transform: translate(-50%, -50%);
+        padding: 12px 24px;
+        background-color: black;
+        color: white;
+        cursor: pointer;
+        font-family: Gantari;
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        pointer-events: none;
+      }
+
+      .enter-button.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .enter-button.hidden {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+        pointer-events: none;
+      }
+
+      .enter-button:hover {
+        background-color: #333;
+      }
     </style>
   </head>
   <body>
@@ -97,6 +128,7 @@
         <h1 id="text2" class="dynamic-text hidden">
           Emphasize its significance, why it's historically relevant.
         </h1>
+        <div id="enterButton" class="enter-button hidden">Enter</div>
       </div>
       <div class="animation-column">
         <div id="sequence-container"></div>
@@ -111,6 +143,7 @@
         const images = [];
         let currentFrame = 0;
         let textTransitioned = false;
+        const enterButton = document.getElementById("enterButton");
 
         // Get references to the dynamic text elements
         const text1 = document.getElementById("text1");
@@ -126,7 +159,15 @@
           images.push(img);
         }
 
-        // Update frame based on scroll position
+        // Add click handler for enter button
+        enterButton.addEventListener("click", () => {
+          container.classList.add("fade-out");
+          setTimeout(() => {
+            window.location.href = "../Build2/index.html";
+          }, 500);
+        });
+
+        // Update scroll event listener
         window.addEventListener("scroll", () => {
           const scrollTop = window.scrollY;
           const maxScroll =
@@ -144,15 +185,17 @@
             images[frameIndex].classList.remove("hidden");
             images[frameIndex].classList.add("visible");
 
-            // Ensure text1 is visible when frame index is less than 50
+            // Show text1 when frame index is less than 50
             if (frameIndex < 50) {
               text2.classList.remove("visible");
               text2.classList.add("hidden");
+              enterButton.classList.remove("visible");
+              enterButton.classList.add("hidden");
               text1.classList.remove("hidden");
               text1.classList.add("visible");
               textTransitioned = false;
             }
-            // Show text2 when frame index is 50 or greater
+            // Show text2 and enter button when frame index is 50 or greater
             else if (frameIndex >= 50 && !textTransitioned) {
               text1.classList.remove("visible");
               text1.classList.add("hidden");
@@ -160,6 +203,12 @@
               setTimeout(() => {
                 text2.classList.remove("hidden");
                 text2.classList.add("visible");
+
+                // Show enter button after text2
+                setTimeout(() => {
+                  enterButton.classList.remove("hidden");
+                  enterButton.classList.add("visible");
+                }, 300);
               }, 300);
 
               textTransitioned = true;

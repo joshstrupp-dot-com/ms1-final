@@ -18,6 +18,31 @@ document.addEventListener("DOMContentLoaded", function () {
     collection.appendChild(collectionImages);
   }
 
+  // Set up initial state with title and close button
+  if (!collection.querySelector(".collection-title")) {
+    // Create and add title
+    const title = document.createElement("h2");
+    title.textContent = "Collection";
+    title.classList.add("collection-title");
+    collection.insertBefore(title, collectionImages);
+
+    // Create close button
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "×";
+    closeButton.className = "overlay-close";
+    collection.appendChild(closeButton);
+
+    // Add click handler to close button
+    closeButton.addEventListener("click", function (e) {
+      e.stopPropagation();
+      collection.classList.remove("active");
+      console.log("Collection closed via button");
+    });
+  }
+
+  // Show collection by default
+  collection.classList.add("active");
+
   // Add click event listener to the Collection button
   document.addEventListener(
     "click",

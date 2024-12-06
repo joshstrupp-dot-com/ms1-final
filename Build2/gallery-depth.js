@@ -255,13 +255,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Load data once and render initial gallery
-  window.dataStore
-    .loadData()
-    .then(() => {
-      renderGallery("all");
-    })
-    .catch((error) => {
-      console.error("Failed to load data:", error);
-    });
+  // Add this new function to handle initial load
+  function handleInitialLoad() {
+    const fromIntro = document.referrer.includes("intro.html");
+    if (fromIntro) {
+      // Force immediate load of first batch of images
+      window.dataStore
+        .loadData()
+        .then(() => {
+          renderGallery("all");
+          // Immediately trigger a scroll event to load more images
+          window.dispatchEvent(new Event("scroll"));
+        })
+        .catch((error) => {
+          console.error("Failed to load data:", error);
+        });
+    } else {
+      // Normal load behavior
+      window.dataStore
+        .loadData()
+        .then(() => {
+          renderGallery("all");
+        })
+        .catch((error) => {
+          console.error("Failed to load data:", error);
+        });
+    }
+  }
+
+  // Replace the existing data load at the bottom with handleInitialLoad
+  handleInitialLoad();
 });
