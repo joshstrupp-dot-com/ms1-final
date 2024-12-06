@@ -26,9 +26,9 @@ export function observeImages(images) {
   });
 }
 
-// New helper function to create and position a bounding box
+// Updated helper function to create and position a bounding box and overlay
 export function createBoundingBox(boundingBoxData, imageElement) {
-  if (!boundingBoxData) return null;
+  if (!boundingBoxData) return { boundingBoxDiv: null, overlayDiv: null };
 
   try {
     const boundingBox = JSON.parse(boundingBoxData);
@@ -77,14 +77,39 @@ export function createBoundingBox(boundingBoxData, imageElement) {
     boundingBoxDiv.style.top = `${y1}px`;
     boundingBoxDiv.style.width = `${x2 - x1}px`;
     boundingBoxDiv.style.height = `${y2 - y1}px`;
-    boundingBoxDiv.style.border = "2px solid red";
+
     boundingBoxDiv.style.boxSizing = "border-box";
     boundingBoxDiv.style.pointerEvents = "none";
+    boundingBoxDiv.style.transition = "opacity 0.3s ease";
 
-    return boundingBoxDiv;
+    // Create and style the overlay div
+    const overlayDiv = document.createElement("div");
+    overlayDiv.className = "overlay";
+    overlayDiv.style.position = "absolute";
+    overlayDiv.style.left = "0";
+    overlayDiv.style.top = "0";
+    overlayDiv.style.width = "100%";
+    overlayDiv.style.height = "100%";
+    overlayDiv.style.backgroundColor = "rgba(242, 238, 235, 0.5)";
+    overlayDiv.style.pointerEvents = "none";
+    overlayDiv.style.clipPath = `polygon(
+      0% 0%,
+      100% 0%,
+      100% 100%,
+      0% 100%,
+      0% 0%,
+      ${x1}px ${y1}px,
+      ${x1}px ${y2}px,
+      ${x2}px ${y2}px,
+      ${x2}px ${y1}px,
+      ${x1}px ${y1}px
+    )`;
+    overlayDiv.style.transition = "opacity 0.3s ease";
+
+    return { boundingBoxDiv, overlayDiv };
   } catch (error) {
-    console.error("Error creating bounding box:", error);
-    return null;
+    console.error("Error creating bounding box and overlay:", error);
+    return { boundingBoxDiv: null, overlayDiv: null };
   }
 }
 
@@ -107,14 +132,40 @@ export function createImageElement(item, options = {}) {
   // Create a wrapper div for the image and bounding box
   const wrapper = document.createElement("div");
   wrapper.style.position = "relative";
+  wrapper.style.display = "inline-block"; // Ensure proper positioning
   wrapper.appendChild(img);
 
-  // Add load event listener to create bounding box after image loads
+  // Add load event listener to create bounding box and overlay after image loads
   img.addEventListener("load", function () {
-    const boundingBoxDiv = createBoundingBox(img.dataset.bounding_box, img);
+    const { boundingBoxDiv, overlayDiv } = createBoundingBox(
+      img.dataset.bounding_box,
+      img
+    );
     if (boundingBoxDiv) {
       wrapper.appendChild(boundingBoxDiv);
     }
+    if (overlayDiv) {
+      wrapper.appendChild(overlayDiv);
+    }
+
+    // Add hover event listeners to handle overlay and bounding box opacity
+    wrapper.addEventListener("mouseenter", () => {
+      if (overlayDiv) {
+        overlayDiv.style.opacity = "0";
+      }
+      if (boundingBoxDiv) {
+        boundingBoxDiv.style.opacity = "0";
+      }
+    });
+
+    wrapper.addEventListener("mouseleave", () => {
+      if (overlayDiv) {
+        overlayDiv.style.opacity = "1";
+      }
+      if (boundingBoxDiv) {
+        boundingBoxDiv.style.opacity = "1";
+      }
+    });
   });
 
   return wrapper; // Return the wrapper instead of just the img

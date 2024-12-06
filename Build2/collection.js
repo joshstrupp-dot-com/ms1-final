@@ -1,5 +1,7 @@
 // File: FE-attempt-3/collection.js
 
+import { CONFIG } from "./config.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const collection = document.querySelector("#collection");
 
@@ -67,97 +69,295 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageData = e.detail;
     console.log("Adding to collection:", imageData);
 
-    // Create a new image element
+    // Get container dimensions
+    const containerRect = collectionImages.getBoundingClientRect();
+
+    // Create a wrapper div for the image and resize handles
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "absolute";
+
+    // Create temporary image to get natural dimensions
+    const tempImg = new Image();
+    tempImg.src = imageData.src;
+
+    tempImg.onload = function () {
+      const aspectRatio = tempImg.naturalWidth / tempImg.naturalHeight;
+
+      // Set initial size maintaining aspect ratio
+      const baseSize = 200; // Base size for either width or height
+      let initialWidth, initialHeight;
+
+      if (aspectRatio > 1) {
+        // Landscape image
+        initialWidth = baseSize;
+        initialHeight = baseSize / aspectRatio;
+      } else {
+        // Portrait or square image
+        initialHeight = baseSize;
+        initialWidth = baseSize * aspectRatio;
+      }
+
+      wrapper.style.width = `${initialWidth}px`;
+      wrapper.style.height = `${initialHeight}px`;
+
+      // Position within container accounting for actual dimensions
+      wrapper.style.left = `${
+        Math.random() * (containerRect.width - initialWidth)
+      }px`;
+      wrapper.style.top = `${
+        Math.random() * (containerRect.height - initialHeight)
+      }px`;
+    };
+
+    wrapper.style.transform = "none";
+    wrapper.style.cursor = "move";
+    wrapper.style.border = "1px solid #ccc";
+    wrapper.style.boxSizing = "border-box";
+    wrapper.style.zIndex = "100";
+
+    // Create the image element
     const newImage = document.createElement("img");
     newImage.src = imageData.src;
     newImage.alt = imageData.alt;
+    newImage.style.width = "100%";
+    newImage.style.height = "100%";
+    newImage.style.display = "block";
 
-    // Set proportional width and height (50% smaller)
-    newImage.style.width = "50%";
-    newImage.style.height = "auto"; // Maintain aspect ratio
+    // Add image to wrapper
+    wrapper.appendChild(newImage);
 
-    // Assign a random position within the collection overlay
-    newImage.style.position = "absolute";
-    newImage.style.top = `${Math.random() * 80 + 10}%`; // Between 10% and 90%
-    newImage.style.left = `${Math.random() * 80 + 10}%`; // Between 10% and 90%
-    newImage.style.transform = "translate(-50%, -50%)"; // Center the image at the position
+    // Add resize handles
+    const handleSize = 10; // Size of resize handles in pixels
+    const positions = ["nw", "ne", "sw", "se"];
+    positions.forEach((pos) => {
+      const handle = document.createElement("div");
+      handle.className = `resize-handle ${pos}`;
+      handle.style.position = "absolute";
+      handle.style.width = `${handleSize}px`;
+      handle.style.height = `${handleSize}px`;
+      handle.style.backgroundColor = "#fff";
+      handle.style.border = "1px solid #666";
+      handle.style.borderRadius = "50%";
+      handle.style.cursor = `${pos}-resize`;
 
-    // Optional: Add transition for smooth appearance
-    newImage.style.opacity = "0";
-    newImage.style.transition = "opacity 0.5s ease";
+      // Position handles at corners
+      switch (pos) {
+        case "nw":
+          handle.style.left = `-${handleSize / 2}px`;
+          handle.style.top = `-${handleSize / 2}px`;
+          break;
+        case "ne":
+          handle.style.right = `-${handleSize / 2}px`;
+          handle.style.top = `-${handleSize / 2}px`;
+          break;
+        case "sw":
+          handle.style.left = `-${handleSize / 2}px`;
+          handle.style.bottom = `-${handleSize / 2}px`;
+          break;
+        case "se":
+          handle.style.right = `-${handleSize / 2}px`;
+          handle.style.bottom = `-${handleSize / 2}px`;
+          break;
+        default:
+          break;
+      }
 
-    // Make the image draggable
-    newImage.style.cursor = "move";
-    newImage.draggable = false; // Disable default drag behavior
+      wrapper.appendChild(handle);
+    });
 
-    // Variables to hold the offset when dragging
+    // Variables for dragging and resizing
     let isDragging = false;
-    let startX, startY, initialX, initialY;
+    let isResizing = false;
+    let currentHandle = null;
+    let startX, startY;
+    let initialX, initialY;
+    let initialWidth, initialHeight;
 
-    // Mouse events for desktop
-    newImage.addEventListener("mousedown", function (e) {
-      e.preventDefault();
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      const rect = newImage.getBoundingClientRect();
-      initialX = rect.left + rect.width / 2; // Center X
-      initialY = rect.top + rect.height / 2; // Center Y
-      newImage.style.transition = "none"; // Disable transition during drag
+    // Function to clamp values within min and max
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    // Mouse events for dragging
+    wrapper.addEventListener("mousedown", function (e) {
+      if (e.target.classList.contains("resize-handle")) {
+        // Start resizing
+        isResizing = true;
+        currentHandle = e.target.classList.contains("nw")
+          ? "nw"
+          : e.target.classList.contains("ne")
+          ? "ne"
+          : e.target.classList.contains("sw")
+          ? "sw"
+          : "se";
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = wrapper.getBoundingClientRect();
+        initialWidth = rect.width;
+        initialHeight = rect.height;
+        initialX = rect.left - containerRect.left;
+        initialY = rect.top - containerRect.top;
+        e.preventDefault();
+      } else {
+        // Start dragging
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = wrapper.getBoundingClientRect();
+        initialX = rect.left - containerRect.left;
+        initialY = rect.top - containerRect.top;
+        e.preventDefault();
+      }
     });
 
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("mousemove", function (e) {
+      if (isDragging) {
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        let newX = initialX + dx;
+        let newY = initialY + dy;
 
-    function onMouseMove(e) {
-      if (!isDragging) return;
-      let dx = e.clientX - startX;
-      let dy = e.clientY - startY;
-      newImage.style.left = `${initialX + dx}px`;
-      newImage.style.top = `${initialY + dy}px`;
-      newImage.style.transform = "translate(-50%, -50%)"; // Keep image centered
-    }
+        // Clamp to container boundaries
+        newX = clamp(newX, 0, containerRect.width - wrapper.offsetWidth);
+        newY = clamp(newY, 0, containerRect.height - wrapper.offsetHeight);
 
-    function onMouseUp(e) {
-      if (!isDragging) return;
-      isDragging = false;
-      newImage.style.transition = "opacity 0.5s ease"; // Re-enable transition
-    }
+        wrapper.style.left = `${newX}px`;
+        wrapper.style.top = `${newY}px`;
+      } else if (isResizing && currentHandle) {
+        let dx = e.clientX - startX;
+        let dy = e.clientY - startY;
+        let newWidth = initialWidth;
+        let newHeight = initialHeight;
+        let newLeft = initialX;
+        let newTop = initialY;
 
-    // Touch events for mobile
-    newImage.addEventListener("touchstart", function (e) {
-      e.preventDefault();
-      isDragging = true;
-      const touch = e.touches[0];
-      startX = touch.clientX;
-      startY = touch.clientY;
-      const rect = newImage.getBoundingClientRect();
-      initialX = rect.left + rect.width / 2;
-      initialY = rect.top + rect.height / 2;
-      newImage.style.transition = "none";
+        // Determine new size based on handle position
+        if (currentHandle.includes("e")) {
+          newWidth = initialWidth + dx;
+        }
+        if (currentHandle.includes("s")) {
+          newHeight = initialHeight + dy;
+        }
+        if (currentHandle.includes("w")) {
+          newWidth = initialWidth - dx;
+          newLeft = initialX + dx;
+        }
+        if (currentHandle.includes("n")) {
+          newHeight = initialHeight - dy;
+          newTop = initialY + dy;
+        }
+
+        // Set minimum size
+        newWidth = clamp(newWidth, 50, containerRect.width - newLeft);
+        newHeight = clamp(newHeight, 50, containerRect.height - newTop);
+
+        // Update wrapper size and position
+        wrapper.style.width = `${newWidth}px`;
+        wrapper.style.height = `${newHeight}px`;
+        wrapper.style.left = `${newLeft}px`;
+        wrapper.style.top = `${newTop}px`;
+      }
     });
 
-    document.addEventListener("touchmove", onTouchMove);
-    document.addEventListener("touchend", onTouchEnd);
-
-    function onTouchMove(e) {
-      if (!isDragging) return;
-      const touch = e.touches[0];
-      let dx = touch.clientX - startX;
-      let dy = touch.clientY - startY;
-      newImage.style.left = `${initialX + dx}px`;
-      newImage.style.top = `${initialY + dy}px`;
-      newImage.style.transform = "translate(-50%, -50%)";
-    }
-
-    function onTouchEnd(e) {
-      if (!isDragging) return;
+    document.addEventListener("mouseup", function (e) {
       isDragging = false;
-      newImage.style.transition = "opacity 0.5s ease";
-    }
+      isResizing = false;
+      currentHandle = null;
+    });
 
-    // Append the image to the collection images container
-    collectionImages.appendChild(newImage);
+    // Touch events for mobile (optional: for better UX)
+    wrapper.addEventListener("touchstart", function (e) {
+      if (e.target.classList.contains("resize-handle")) {
+        // Start resizing
+        isResizing = true;
+        currentHandle = e.target.classList.contains("nw")
+          ? "nw"
+          : e.target.classList.contains("ne")
+          ? "ne"
+          : e.target.classList.contains("sw")
+          ? "sw"
+          : "se";
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        const rect = wrapper.getBoundingClientRect();
+        initialWidth = rect.width;
+        initialHeight = rect.height;
+        initialX = rect.left - containerRect.left;
+        initialY = rect.top - containerRect.top;
+        e.preventDefault();
+      } else {
+        // Start dragging
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        const rect = wrapper.getBoundingClientRect();
+        initialX = rect.left - containerRect.left;
+        initialY = rect.top - containerRect.top;
+        e.preventDefault();
+      }
+    });
+
+    document.addEventListener("touchmove", function (e) {
+      if (isDragging) {
+        const touch = e.touches[0];
+        let dx = touch.clientX - startX;
+        let dy = touch.clientY - startY;
+        let newX = initialX + dx;
+        let newY = initialY + dy;
+
+        // Clamp to container boundaries
+        newX = clamp(newX, 0, containerRect.width - wrapper.offsetWidth);
+        newY = clamp(newY, 0, containerRect.height - wrapper.offsetHeight);
+
+        wrapper.style.left = `${newX}px`;
+        wrapper.style.top = `${newY}px`;
+      } else if (isResizing && currentHandle) {
+        const touch = e.touches[0];
+        let dx = touch.clientX - startX;
+        let dy = touch.clientY - startY;
+        let newWidth = initialWidth;
+        let newHeight = initialHeight;
+        let newLeft = initialX;
+        let newTop = initialY;
+
+        // Determine new size based on handle position
+        if (currentHandle.includes("e")) {
+          newWidth = initialWidth + dx;
+        }
+        if (currentHandle.includes("s")) {
+          newHeight = initialHeight + dy;
+        }
+        if (currentHandle.includes("w")) {
+          newWidth = initialWidth - dx;
+          newLeft = initialX + dx;
+        }
+        if (currentHandle.includes("n")) {
+          newHeight = initialHeight - dy;
+          newTop = initialY + dy;
+        }
+
+        // Set minimum size
+        newWidth = clamp(newWidth, 50, containerRect.width - newLeft);
+        newHeight = clamp(newHeight, 50, containerRect.height - newTop);
+
+        // Update wrapper size and position
+        wrapper.style.width = `${newWidth}px`;
+        wrapper.style.height = `${newHeight}px`;
+        wrapper.style.left = `${newLeft}px`;
+        wrapper.style.top = `${newTop}px`;
+      }
+    });
+
+    document.addEventListener("touchend", function (e) {
+      isDragging = false;
+      isResizing = false;
+      currentHandle = null;
+    });
+
+    // Append the wrapper to the collection images container
+    collectionImages.appendChild(wrapper);
 
     // Trigger reflow and then set opacity to 1 for transition
     requestAnimationFrame(() => {

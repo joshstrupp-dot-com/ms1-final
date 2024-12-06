@@ -16,6 +16,7 @@ export const CONFIG = {
     BOUNDING_BOX: "bounding_box",
     AREA: "Area",
     CROPPED_IMAGE_PATH: "cropped_image_path",
+    NAME: "Name",
   },
 };
 
