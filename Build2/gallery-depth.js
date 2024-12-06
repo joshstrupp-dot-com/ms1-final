@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function renderImages(items, ul, startIndex, endIndex) {
     items.slice(startIndex, endIndex).forEach((item) => {
       const li = document.createElement("li");
+      li.setAttribute("data-name", item[CONFIG.DATA_KEYS.NAME]);
       const imageWrapper = createImageElement(item);
       li.appendChild(imageWrapper);
       ul.appendChild(li);

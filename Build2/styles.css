@@ -223,6 +223,7 @@ body {
   border-radius: 3px;
   transition: transform 0.2s, opacity 1s ease;
   opacity: 1;
+  cursor: pointer;
 }
 
 /* .gallery-list img:hover {

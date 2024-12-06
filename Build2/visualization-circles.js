@@ -53,28 +53,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const Tooltip = vis
       .append("div")
       .attr("class", "visualization-tooltip")
-      .style("position", "fixed");
+      .style("position", "fixed")
+      .style("opacity", 0)
+      .style("pointer-events", "none") // Ensures tooltip doesn't interfere with mouse events
+      .style("background-color", "rgba(0, 0, 0, 0.7)")
+      .style("color", "#fff")
+      .style("padding", "8px")
+      .style("border-radius", "4px")
+      .style("font-size", "12px");
 
     // Mouse event handlers
     const mouseover = function (event, d) {
       Tooltip.style("opacity", 1);
-      console.log(
-        "Tooltip element:",
-        document.querySelector(".visualization-tooltip")
-      );
     };
 
-    // Position tooltip near cursor while keeping it within viewport bounds
-
     const mousemove = function (event, d) {
-      const tooltipWidth = 100; // Approximate width of tooltip
+      const tooltipWidth = 150; // Approximate width of tooltip
       const tooltipHeight = 50; // Approximate height of tooltip
 
       // Calculate position, keeping tooltip within viewport
-      const left = Math.min(event.pageX + 1, window.innerWidth - tooltipWidth);
+      const left = Math.min(
+        event.pageX + 10,
+        window.innerWidth - tooltipWidth - 10
+      );
       const top = Math.min(
-        event.pageY - tooltipHeight - 1,
-        window.innerHeight - tooltipHeight
+        event.pageY - tooltipHeight - 10,
+        window.innerHeight - tooltipHeight - 10
       );
 
       Tooltip.html(`<strong>${d.name}</strong><br>Count: ${d.count}`)
@@ -85,6 +89,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const mouseleave = function (event, d) {
       Tooltip.style("opacity", 0);
     };
+
+    // Track the currently selected name for toggling
+    let currentlySelectedName = null;
 
     // Create the circles
     const node = svg
@@ -102,6 +109,50 @@ document.addEventListener("DOMContentLoaded", function () {
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
+      // Add click event handler
+      .on("click", function (event, d) {
+        // Log the clicked circle's data
+        console.log("Circle clicked:", {
+          name: d.name,
+          count: d.count,
+          items: allData.filter((item) => item.Name === d.name),
+        });
+
+        // Get the circle's color
+        const circleColor = color(d.name);
+
+        // Select all <li> elements in the gallery
+        const allGalleryLi = document.querySelectorAll(
+          `#gallery-depth .gallery-list li`
+        );
+
+        if (currentlySelectedName === d.name) {
+          // **Toggle Off:** Deselect and show all images
+          allGalleryLi.forEach((li) => {
+            // Remove border
+            li.style.border = "2px solid transparent";
+            // Show all images
+            li.style.display = "flex"; // Adjust based on your CSS layout
+          });
+          currentlySelectedName = null;
+        } else {
+          // **Toggle On:** Highlight matching images and hide others
+          allGalleryLi.forEach((li) => {
+            if (li.getAttribute("data-name") === d.name) {
+              // Add border with circle's color
+              li.style.border = `3px solid ${circleColor}`;
+              // Show the image
+              li.style.display = "flex"; // Adjust based on your CSS layout
+            } else {
+              // Remove any existing border
+              li.style.border = "2px solid transparent";
+              // Hide non-matching images
+              li.style.display = "none";
+            }
+          });
+          currentlySelectedName = d.name;
+        }
+      })
       .call(
         d3
           .drag()
