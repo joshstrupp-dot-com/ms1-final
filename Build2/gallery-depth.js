@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create the gallery structure for the filtered category
     const groupName = value;
     const categoryLabel = document.createElement("h3");
-    categoryLabel.textContent = groupName;
+    categoryLabel.textContent = `${category}: ${groupName}`;
     galleryDepth.appendChild(categoryLabel);
 
     const ul = document.createElement("ul");

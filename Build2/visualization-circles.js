@@ -124,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Add click event handler
       .on("click", function (event, d) {
         console.log("Circle clicked:", d.name);
+
         // Determine if the clicked circle is already active
         const isActive = d3.select(this).classed("active-circle");
         console.log("Circle active state:", isActive);
@@ -142,11 +143,18 @@ document.addEventListener("DOMContentLoaded", function () {
             circle.name === currentlySelectedName ? 1 : 0.3
           );
 
-          // Dispatch filter event
+          // Dispatch filter event with 'category' and 'value'
           const filterEvent = new CustomEvent("filterChanged", {
-            detail: { name: d.name },
+            detail: {
+              category: "Name", // The category to filter by
+              value: d.name, // The value of the 'Name' to filter
+            },
           });
           document.dispatchEvent(filterEvent);
+          console.log("Dispatched filterChanged event with:", {
+            category: "Name",
+            value: d.name,
+          });
         } else {
           currentlySelectedName = null;
           console.log("Clearing active circle");
@@ -156,9 +164,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Dispatch event to clear filter
           const clearFilterEvent = new CustomEvent("filterChanged", {
-            detail: { name: null },
+            detail: {
+              category: null,
+              value: null,
+            },
           });
           document.dispatchEvent(clearFilterEvent);
+          console.log("Dispatched filterChanged event to clear filter");
         }
       })
       .call(
