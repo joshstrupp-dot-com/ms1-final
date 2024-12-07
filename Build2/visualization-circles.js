@@ -12,6 +12,15 @@ document.addEventListener("DOMContentLoaded", function () {
     .attr("height", "100%")
     .attr("class", "visualization-svg");
 
+  // Add silhouette as background image
+  svg
+    .append("image")
+    .attr("xlink:href", "./assets/SVG/silo_nobg.svg")
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("class", "background-silhouette");
+
   // Get actual dimensions from the container
   const width = parseInt(vis.style("width"));
   const height = parseInt(vis.style("height"));
@@ -46,17 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }));
     console.log("Processed data for visualization:", data);
 
-    // Color scale: Assign a unique color to each name
-    const color = d3
-      .scaleOrdinal()
-      .domain(data.map((d) => d.name)) // Get unique names
-      .range(d3.schemeCategory10);
-    console.log("Color scale domain:", color.domain());
-
     // Size scale: Circle radius based on count
     const size = d3
       .scaleLinear()
-      .domain([d3.min(data, (d) => d.count), d3.max(data, (d) => d.count)]) // Get min and max counts
+      .domain([d3.min(data, (d) => d.count), d3.max(data, (d) => d.count)])
       .range([10, 50]);
     console.log("Size scale domain:", size.domain());
 
@@ -65,12 +67,68 @@ document.addEventListener("DOMContentLoaded", function () {
       .attr("class", "visualization-tooltip")
       .style("position", "fixed")
       .style("opacity", 0)
-      .style("pointer-events", "none") // Ensures tooltip doesn't interfere with mouse events
+      .style("pointer-events", "none")
       .style("background-color", "rgba(0, 0, 0, 0.7)")
       .style("color", "#fff")
       .style("padding", "8px")
       .style("border-radius", "4px")
       .style("font-size", "12px");
+
+    // Define initial positions as percentages
+    const initialPositions = {
+      sleeve: { xPercent: 0.35, yPercent: 0.4 },
+      shoe: { xPercent: 0.45, yPercent: 0.95 },
+      belt: { xPercent: 0.5, yPercent: 0.5 },
+      "shirt, blouse": { xPercent: 0.5, yPercent: 0.3 },
+      hat: { xPercent: 0.6, yPercent: 0.04 },
+      skirt: { xPercent: 0.48, yPercent: 0.47 },
+      glove: { xPercent: 0.8, yPercent: 0.54 },
+      neckline: { xPercent: 0.47, yPercent: 0.17 },
+      lapel: { xPercent: 0.35, yPercent: 0.19 },
+      tie: { xPercent: 0.5, yPercent: 0.21 },
+      "headband, head covering, hair accessory": {
+        xPercent: 0.44,
+        yPercent: 0.05,
+      },
+      collar: { xPercent: 0.62, yPercent: 0.15 },
+      pants: { xPercent: 0.33, yPercent: 0.66 },
+      watch: { xPercent: 0.75, yPercent: 0.47 },
+      "top, t-shirt, sweatshirt": { xPercent: 0.36, yPercent: 0.34 },
+      pocket: { xPercent: 0.34, yPercent: 0.5 },
+      dress: { xPercent: 0.45, yPercent: 0.35 },
+      coat: { xPercent: 0.4, yPercent: 0.3 },
+      "bag, wallet": { xPercent: 0.65, yPercent: 0.6 },
+      jacket: { xPercent: 0.38, yPercent: 0.32 },
+      buckle: { xPercent: 0.39, yPercent: 0.32 },
+    };
+
+    // Function to calculate actual positions
+    function calculatePosition(xPercent, yPercent, width, height) {
+      return {
+        x: width * xPercent,
+        y: height * yPercent,
+      };
+    }
+
+    // Update positions when container size changes
+    function updatePositions() {
+      const width = parseInt(vis.style("width"));
+      const height = parseInt(vis.style("height"));
+
+      node.each(function (d) {
+        if (initialPositions[d.name]) {
+          const pos = calculatePosition(
+            initialPositions[d.name].xPercent,
+            initialPositions[d.name].yPercent,
+            width,
+            height
+          );
+          d.fx = pos.x;
+          d.fy = pos.y;
+          d.fixed = true;
+        }
+      });
+    }
 
     // Mouse event handlers
     const mouseover = function (event, d) {
@@ -79,10 +137,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const mousemove = function (event, d) {
-      const tooltipWidth = 150; // Approximate width of tooltip
-      const tooltipHeight = 50; // Approximate height of tooltip
+      const tooltipWidth = 150;
+      const tooltipHeight = 50;
 
-      // Calculate position, keeping tooltip within viewport
       const left = Math.min(
         event.pageX + 10,
         window.innerWidth - tooltipWidth - 10
@@ -114,40 +171,46 @@ document.addEventListener("DOMContentLoaded", function () {
       .append("circle")
       .attr("class", "node visualization-circle")
       .attr("r", (d) => size(d.count))
-      .attr("cx", width / 2)
-      .attr("cy", height / 2)
-      .style("fill", (d) => color(d.name))
-      .style("fill-opacity", 0.8)
+      .style("fill", "rgba(242, 238, 235, 0.40)")
+      .style("stroke", "#000")
+      .style("stroke-width", "2px")
+      .each(function (d) {
+        if (initialPositions[d.name]) {
+          const pos = calculatePosition(
+            initialPositions[d.name].xPercent,
+            initialPositions[d.name].yPercent,
+            width,
+            height
+          );
+          d.fx = pos.x;
+          d.fy = pos.y;
+          d.fixed = true;
+        }
+      })
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
-      // Add click event handler
       .on("click", function (event, d) {
         console.log("Circle clicked:", d.name);
 
-        // Determine if the clicked circle is already active
         const isActive = d3.select(this).classed("active-circle");
         console.log("Circle active state:", isActive);
 
-        // Remove active class from all circles
         node.classed("active-circle", false);
 
         if (!isActive) {
-          // Add active class to the clicked circle
           d3.select(this).classed("active-circle", true);
           currentlySelectedName = d.name;
           console.log("Setting active circle:", currentlySelectedName);
 
-          // Update all circles opacity based on selection
           node.style("opacity", (circle) =>
             circle.name === currentlySelectedName ? 1 : 0.3
           );
 
-          // Dispatch filter event with 'category' and 'value'
           const filterEvent = new CustomEvent("filterChanged", {
             detail: {
-              category: "Name", // The category to filter by
-              value: d.name, // The value of the 'Name' to filter
+              category: "Name",
+              value: d.name,
             },
           });
           document.dispatchEvent(filterEvent);
@@ -159,10 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
           currentlySelectedName = null;
           console.log("Clearing active circle");
 
-          // Reset all circles opacity
           node.style("opacity", 1);
 
-          // Dispatch event to clear filter
           const clearFilterEvent = new CustomEvent("filterChanged", {
             detail: {
               category: null,
@@ -181,53 +242,55 @@ document.addEventListener("DOMContentLoaded", function () {
           .on("end", dragended)
       );
 
+    // Add resize observer
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        if (entry.target === vis.node()) {
+          updatePositions();
+          simulation.alpha(0.3).restart();
+        }
+      }
+    });
+
+    resizeObserver.observe(vis.node());
+
     console.log("Circles created:", node.size());
 
-    // Features of the forces applied to the nodes
+    // Remove or simplify the simulation
     const simulation = d3
       .forceSimulation()
-      .force(
-        "center",
-        d3
-          .forceCenter()
-          .x(width / 2)
-          .y(height / 2)
-      ) // Attraction to the center
-      .force("charge", d3.forceManyBody().strength(0.1)) // Nodes are attracted/repelled
-      .force(
-        "collide",
-        d3
-          .forceCollide()
-          .strength(0.2)
-          .radius((d) => size(d.count) + 3)
-          .iterations(1)
-      ); // Avoid overlap
-
-    console.log("Force simulation initialized");
+      .force("x", d3.forceX().strength(1)) // Strong force to maintain x position
+      .force("y", d3.forceY().strength(1)) // Strong force to maintain y position
+      .alphaDecay(0.1); // Quick settling
 
     // Apply the simulation to the nodes
     simulation.nodes(data).on("tick", () => {
-      node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
+      node
+        .attr("cx", (d) => (d.fixed ? d.fx : d.x))
+        .attr("cy", (d) => (d.fixed ? d.fy : d.y));
     });
 
-    // Drag event handlers
+    // Simplify drag handlers to just update position
     function dragstarted(event, d) {
-      console.log("Drag started:", d.name);
-      if (!event.active) simulation.alphaTarget(0.03).restart();
-      d.fx = d.x;
-      d.fy = d.y;
+      if (!d.fixed) {
+        d.fx = d.x;
+        d.fy = d.y;
+      }
     }
 
     function dragged(event, d) {
-      d.fx = event.x;
-      d.fy = event.y;
+      if (!d.fixed) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
     }
 
     function dragended(event, d) {
-      console.log("Drag ended:", d.name);
-      if (!event.active) simulation.alphaTarget(0.03);
-      d.fx = null;
-      d.fy = null;
+      console.log(`name: ${d.name}, position: x=${event.x}, y=${event.y}`);
+      if (!d.fixed) {
+        d.fx = null;
+        d.fy = null;
+      }
     }
 
     // Listen for filter changes from other visualizations
@@ -239,7 +302,6 @@ document.addEventListener("DOMContentLoaded", function () {
         currentlySelectedName = filterName;
         console.log("Updating visualization for filter:", filterName);
 
-        // Update circle states
         node
           .classed("active-circle", (d) => d.name === filterName)
           .style("opacity", (d) => (d.name === filterName ? 1 : 0.3));
@@ -247,7 +309,6 @@ document.addEventListener("DOMContentLoaded", function () {
         currentlySelectedName = null;
         console.log("Clearing visualization filter");
 
-        // Reset circle states
         node.classed("active-circle", false).style("opacity", 1);
       }
     });

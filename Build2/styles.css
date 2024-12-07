@@ -79,6 +79,23 @@ body {
   bottom: 0;
 }
 
+/* More specific selector to target the SVG image */
+#visualization-circles svg image.background-silhouette {
+  opacity: 1;
+  height: 47vh;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* transform: translate(-50%, -50%); */
+}
+
+/* If you need to target specific SVG properties */
+#visualization-circles svg image.background-silhouette {
+  fill: currentColor; /* for SVG fill */
+  stroke: none; /* for SVG stroke */
+}
+
 /*------------------------------------
   TYPOGRAPHY STYLES
 ------------------------------------*/
