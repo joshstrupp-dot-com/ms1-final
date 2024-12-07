@@ -86,9 +86,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Create the "+ Add to Collection" button
       const addToCollectionButton = document.createElement("button");
-      addToCollectionButton.textContent = "+ Add to Collection";
+      addToCollectionButton.textContent = "+ Entire Image";
       addToCollectionButton.className = "button add-to-collection";
       imageContainer.appendChild(addToCollectionButton);
+
+      // Create the "+ Add Crop" button
+      const addCropButton = document.createElement("button");
+      addCropButton.textContent = "+ Image Crop";
+      addCropButton.className = "button add-to-collection";
+      addCropButton.style.top = "45px"; // Position below first button
+      imageContainer.appendChild(addCropButton);
 
       // Append the image container to the overlay
       overlay.appendChild(imageContainer);
@@ -173,27 +180,28 @@ document.addEventListener("DOMContentLoaded", function () {
         document.dispatchEvent(addToCollectionEvent);
       });
 
-      // Add event listener to the bounding box for click event
-      overlayImage.addEventListener("click", function (e) {
-        // Check if the click is within the bounding box
-        if (e.target === this) {
-          const croppedImagePath =
-            "../" + (this.dataset.cropped_image_path || "Unknown");
-          console.log(`Cropped image path: ${croppedImagePath}`);
+      // Add click handler to the "+ Add Crop" button
+      addCropButton.addEventListener("click", function (e) {
+        e.stopPropagation();
+        this.classList.add("clicked");
+        this.textContent = "Added to Collection";
 
-          // Create image data object for the cropped version
-          const imageData = {
-            src: croppedImagePath,
-            alt: this.alt,
-            croppedImagePath: croppedImagePath,
-          };
+        const croppedImagePath =
+          "../" + (overlayImage.dataset.cropped_image_path || "Unknown");
+        console.log(`Cropped image path: ${croppedImagePath}`);
 
-          // Dispatch the same addToCollection event we use for the button
-          const addToCollectionEvent = new CustomEvent("addToCollection", {
-            detail: imageData,
-          });
-          document.dispatchEvent(addToCollectionEvent);
-        }
+        // Create image data object for the cropped version
+        const imageData = {
+          src: croppedImagePath,
+          alt: overlayImage.alt,
+          croppedImagePath: croppedImagePath,
+        };
+
+        // Dispatch the addToCollection event
+        const addToCollectionEvent = new CustomEvent("addToCollection", {
+          detail: imageData,
+        });
+        document.dispatchEvent(addToCollectionEvent);
       });
     }
   });

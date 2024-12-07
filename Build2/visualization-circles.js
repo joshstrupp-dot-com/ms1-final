@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM Content Loaded - Initializing visualization-circles");
+
   // Get visualization container
   const vis = d3.select("#visualization-circles");
+  console.log("Visualization container:", vis.node());
 
   // Set up SVG
   const svg = vis
@@ -12,13 +15,16 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get actual dimensions from the container
   const width = parseInt(vis.style("width"));
   const height = parseInt(vis.style("height"));
+  console.log("Container dimensions:", { width, height });
 
   // Set viewBox to maintain aspect ratio
   svg.attr("viewBox", `0 0 ${width} ${height}`);
 
   // Load data once and use it
   window.dataStore.loadData().then(() => {
+    console.log("Data loaded successfully");
     const allData = window.dataStore.allData;
+    console.log("Total records:", allData.length);
 
     // Start Generation Here
     const nameCounts = {};
@@ -31,24 +37,28 @@ document.addEventListener("DOMContentLoaded", function () {
         nameCounts[d.Name] = 1;
       }
     });
+    console.log("Name counts:", nameCounts);
 
     // Convert nameCounts object into an array of objects for D3
     const data = Object.entries(nameCounts).map(([name, count]) => ({
       name: name,
       count: count,
     }));
+    console.log("Processed data for visualization:", data);
 
     // Color scale: Assign a unique color to each name
     const color = d3
       .scaleOrdinal()
       .domain(data.map((d) => d.name)) // Get unique names
       .range(d3.schemeCategory10);
+    console.log("Color scale domain:", color.domain());
 
     // Size scale: Circle radius based on count
     const size = d3
       .scaleLinear()
       .domain([d3.min(data, (d) => d.count), d3.max(data, (d) => d.count)]) // Get min and max counts
       .range([10, 50]);
+    console.log("Size scale domain:", size.domain());
 
     const Tooltip = vis
       .append("div")
@@ -64,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Mouse event handlers
     const mouseover = function (event, d) {
+      console.log("Mouseover event:", d.name);
       Tooltip.style("opacity", 1);
     };
 
@@ -87,6 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const mouseleave = function (event, d) {
+      console.log("Mouseleave event:", d.name);
       Tooltip.style("opacity", 0);
     };
 
@@ -111,8 +123,10 @@ document.addEventListener("DOMContentLoaded", function () {
       .on("mouseleave", mouseleave)
       // Add click event handler
       .on("click", function (event, d) {
+        console.log("Circle clicked:", d.name);
         // Determine if the clicked circle is already active
         const isActive = d3.select(this).classed("active-circle");
+        console.log("Circle active state:", isActive);
 
         // Remove active class from all circles
         node.classed("active-circle", false);
@@ -120,6 +134,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!isActive) {
           // Add active class to the clicked circle
           d3.select(this).classed("active-circle", true);
+          currentlySelectedName = d.name;
+          console.log("Setting active circle:", currentlySelectedName);
+
+          // Update all circles opacity based on selection
+          node.style("opacity", (circle) =>
+            circle.name === currentlySelectedName ? 1 : 0.3
+          );
 
           // Dispatch filter event
           const filterEvent = new CustomEvent("filterChanged", {
@@ -127,6 +148,12 @@ document.addEventListener("DOMContentLoaded", function () {
           });
           document.dispatchEvent(filterEvent);
         } else {
+          currentlySelectedName = null;
+          console.log("Clearing active circle");
+
+          // Reset all circles opacity
+          node.style("opacity", 1);
+
           // Dispatch event to clear filter
           const clearFilterEvent = new CustomEvent("filterChanged", {
             detail: { name: null },
@@ -141,6 +168,8 @@ document.addEventListener("DOMContentLoaded", function () {
           .on("drag", dragged)
           .on("end", dragended)
       );
+
+    console.log("Circles created:", node.size());
 
     // Features of the forces applied to the nodes
     const simulation = d3
@@ -162,6 +191,8 @@ document.addEventListener("DOMContentLoaded", function () {
           .iterations(1)
       ); // Avoid overlap
 
+    console.log("Force simulation initialized");
+
     // Apply the simulation to the nodes
     simulation.nodes(data).on("tick", () => {
       node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
@@ -169,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Drag event handlers
     function dragstarted(event, d) {
+      console.log("Drag started:", d.name);
       if (!event.active) simulation.alphaTarget(0.03).restart();
       d.fx = d.x;
       d.fy = d.y;
@@ -180,20 +212,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function dragended(event, d) {
+      console.log("Drag ended:", d.name);
       if (!event.active) simulation.alphaTarget(0.03);
       d.fx = null;
       d.fy = null;
     }
-  });
-});
-document.addEventListener("filterChanged", function (e) {
-  const filterName = e.detail.name; // The name to filter by (e.g., "lapel")
 
-  if (filterName) {
-    // Apply the filter
-    applyFilter(filterName);
-  } else {
-    // Clear the filter
-    clearFilter();
-  }
+    // Listen for filter changes from other visualizations
+    document.addEventListener("filterChanged", function (e) {
+      const filterName = e.detail.name;
+      console.log("Filter changed event received:", filterName);
+
+      if (filterName) {
+        currentlySelectedName = filterName;
+        console.log("Updating visualization for filter:", filterName);
+
+        // Update circle states
+        node
+          .classed("active-circle", (d) => d.name === filterName)
+          .style("opacity", (d) => (d.name === filterName ? 1 : 0.3));
+      } else {
+        currentlySelectedName = null;
+        console.log("Clearing visualization filter");
+
+        // Reset circle states
+        node.classed("active-circle", false).style("opacity", 1);
+      }
+    });
+  });
 });

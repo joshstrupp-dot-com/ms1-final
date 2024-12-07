@@ -4,11 +4,19 @@ import { CONFIG } from "./config.js";
 // Import utility functions:
 // - observeImages: Sets up lazy loading for images
 // - createImageElement: Creates an <img> element with proper attributes
-import { observeImages, createImageElement } from "./utils.js";
+import {
+  observeImages,
+  createImageElement,
+  loadImagesInContainer,
+} from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM Content Loaded - Initializing gallery-depth");
+
   // How many images to show at once when loading more
   const ITEMS_PER_PAGE = CONFIG.ITEMS_PER_PAGE;
+  console.log("Items per page:", ITEMS_PER_PAGE);
+
   // Keep track of what page of results we're on
   let currentPage = 1;
   // Flag to prevent loading more while already loading
@@ -19,12 +27,17 @@ document.addEventListener("DOMContentLoaded", function () {
   let currentGroupedData;
 
   // === Start: Add Filter State Variables ===
-  let currentFilter = null; // Holds the current filter name (e.g., "lapel")
-  let filteredItemsLoaded = false; // Flag to prevent multiple full loads
+  let currentFilter = null; // Holds the current filter (e.g., { category: 'est_year', value: '1840' })
   // === End: Add Filter State Variables ===
 
   // Helper function to add images to the page
   function renderImages(items, ul, startIndex, endIndex) {
+    console.log("Rendering images:", {
+      startIndex,
+      endIndex,
+      itemCount: items.length,
+    });
+
     items.slice(startIndex, endIndex).forEach((item) => {
       const li = document.createElement("li");
       li.setAttribute("data-name", item[CONFIG.DATA_KEYS.NAME]); // Add data-name attribute
@@ -33,25 +46,43 @@ document.addEventListener("DOMContentLoaded", function () {
       ul.appendChild(li);
     });
 
+    console.log("Finished rendering images");
+
     // Observe the images within their wrappers
     observeImages(ul.querySelectorAll("img"));
   }
 
   // === Start: Add applyFilter and clearFilter Functions ===
   /**
-   * Applies a filter to show only items matching the filterName.
-   * @param {string} filterName - The name to filter by (e.g., "lapel").
+   * Applies a filter to show only items matching the category and value.
+   * @param {string} category - The category to filter by (e.g., "est_year").
+   * @param {string} value - The value to filter by (e.g., "1840").
    */
-  function applyFilter(filterName) {
-    currentFilter = filterName;
-    filteredItemsLoaded = false; // Reset the flag
+  function applyFilter(category, value) {
+    console.log("Applying filter:", { category, value });
+
+    // Toggle filter if the same filter is clicked again
+    if (
+      currentFilter &&
+      currentFilter.category === category &&
+      currentFilter.value === value
+    ) {
+      console.log("Same filter clicked - clearing filter");
+      clearFilter();
+      return;
+    }
+
+    currentFilter = { category, value };
+
+    // Reset pagination
+    currentPage = 1;
 
     // Clear existing gallery
     const galleryDepth = document.getElementById("gallery-depth");
     galleryDepth.innerHTML = "";
 
     // Create the gallery structure for the filtered category
-    const groupName = filterName; // Assuming each filter corresponds to a single name
+    const groupName = value;
     const categoryLabel = document.createElement("h3");
     categoryLabel.textContent = groupName;
     galleryDepth.appendChild(categoryLabel);
@@ -61,15 +92,15 @@ document.addEventListener("DOMContentLoaded", function () {
     galleryDepth.appendChild(ul);
 
     // Load all items for this filter
-    loadAllFilteredImages(filterName);
+    loadFilteredImages();
   }
 
   /**
    * Clears any active filters and restores the full gallery view.
    */
   function clearFilter() {
+    console.log("Clearing filter");
     currentFilter = null;
-    filteredItemsLoaded = false;
 
     // Reset pagination
     currentPage = 1;
@@ -77,6 +108,10 @@ document.addEventListener("DOMContentLoaded", function () {
     // Clear existing gallery
     const galleryDepth = document.getElementById("gallery-depth");
     galleryDepth.innerHTML = "";
+
+    // Remove active state from category buttons
+    const categoryButtons = Array.from(document.querySelectorAll(".button"));
+    categoryButtons.forEach((btn) => btn.classList.remove("active"));
 
     // Create the gallery structure for "all"
     const ul = document.createElement("ul");
@@ -88,36 +123,43 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /**
-   * Loads all images that match the specified filterName.
-   * @param {string} filterName - The name to filter by.
+   * Loads images that match the current filter.
    */
-  function loadAllFilteredImages(filterName) {
-    if (filteredItemsLoaded) return; // Prevent multiple loads
-
+  function loadFilteredImages() {
+    console.log("Loading filtered images");
     const galleryDepth = document.getElementById("gallery-depth");
     const ul = galleryDepth.querySelector(".gallery-list");
 
-    // Filter items based on the selected name
+    // Filter items based on the selected category and value
     const filteredItems = window.dataStore.allData.filter(
-      (item) => item[CONFIG.DATA_KEYS.NAME] === filterName
+      (item) => item[currentFilter.category] === currentFilter.value
     );
+    console.log("Filtered items count:", filteredItems.length);
 
-    // Render all filtered images at once
-    renderImages(filteredItems, ul, 0, filteredItems.length);
+    // Render filtered images with pagination
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    renderImages(filteredItems, ul, startIndex, endIndex);
 
-    filteredItemsLoaded = true;
+    currentPage++;
   }
   // === End: Add applyFilter and clearFilter Functions ===
 
   // Load more images when user scrolls near bottom
   function loadMoreImages() {
-    if (isLoading) return;
+    if (isLoading) {
+      console.log("Already loading images - skipping");
+      return;
+    }
+    console.log("Loading more images");
     isLoading = true;
 
     const galleryDepth = document.getElementById("gallery-depth");
 
+    // If a filter is active, load filtered images
     if (currentFilter) {
-      // If a filter is active, do not paginate; items are loaded via loadAllFilteredImages
+      console.log("Loading filtered images");
+      loadFilteredImages();
       isLoading = false;
       return;
     }
@@ -128,9 +170,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // If showing all items, add them to main list
     if (currentCategory.toLowerCase() === "all") {
+      console.log("Loading all items");
       const ul = galleryDepth.querySelector(".gallery-list");
       renderImages(window.dataStore.allData, ul, startIndex, endIndex);
     } else {
+      console.log("Loading items by category:", currentCategory);
       // If grouped by category, add items to their category sections
       currentGroupedData.forEach((items, groupName) => {
         const groupSection = Array.from(galleryDepth.children).find(
@@ -147,15 +191,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Move to next page and mark loading as done
     currentPage++;
     isLoading = false;
+    console.log("Finished loading more images");
   }
 
   // === Start: Listen for 'filterChanged' Event ===
   document.addEventListener("filterChanged", function (e) {
-    const filterName = e.detail.name; // The name to filter by (e.g., "lapel")
+    console.log("Filter changed event received:", e.detail);
+    const { category, value } = e.detail;
 
-    if (filterName) {
+    if (category && value) {
       // Apply the filter
-      applyFilter(filterName);
+      applyFilter(category, value);
     } else {
       // Clear the filter
       clearFilter();
@@ -165,11 +211,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Reset and rebuild the gallery when category changes
   function renderGallery(category) {
+    console.log("Rendering gallery for category:", category);
     // Reset to first page
     currentPage = 1;
     currentCategory = category;
     currentFilter = null; // Clear any active filter
-    filteredItemsLoaded = false;
 
     const galleryDepth = document.getElementById("gallery-depth");
     galleryDepth.innerHTML = "";
@@ -190,6 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         (d) => d[category]
       );
     }
+    console.log("Grouped data:", currentGroupedData);
 
     // Create the gallery structure
     if (category.toLowerCase() === "all") {
@@ -223,15 +270,19 @@ document.addEventListener("DOMContentLoaded", function () {
       window.innerHeight + window.scrollY >=
       document.documentElement.scrollHeight - 500
     ) {
+      console.log("Scroll threshold reached - loading more images");
       loadMoreImages();
     }
   });
 
   // Add click handlers for all category buttons
   const categoryButtons = Array.from(document.querySelectorAll(".button"));
+  console.log("Category buttons found:", categoryButtons.length);
 
   categoryButtons.forEach((button) => {
     button.addEventListener("click", () => {
+      console.log("Category button clicked:", button.textContent.trim());
+
       // Skip Collection button
       if (button.textContent.trim().toLowerCase() === "collection") {
         return;
@@ -241,6 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // If button is already active, deactivate it and show all
       if (button.classList.contains("active")) {
+        console.log("Deactivating active category");
         button.classList.remove("active");
         renderGallery("all");
         return;
@@ -257,12 +309,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add this new function to handle initial load
   function handleInitialLoad() {
+    console.log("Handling initial load");
     const fromIntro = document.referrer.includes("intro.html");
+    console.log("Coming from intro page:", fromIntro);
+
     if (fromIntro) {
       // Force immediate load of first batch of images
       window.dataStore
         .loadData()
         .then(() => {
+          console.log("Data loaded - rendering gallery");
           renderGallery("all");
           // Immediately trigger a scroll event to load more images
           window.dispatchEvent(new Event("scroll"));
@@ -275,6 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
       window.dataStore
         .loadData()
         .then(() => {
+          console.log("Data loaded - rendering gallery");
           renderGallery("all");
         })
         .catch((error) => {

@@ -3,7 +3,10 @@
 import { CONFIG } from "./config.js";
 
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM Content Loaded - Initializing collection");
+
   const collection = document.querySelector("#collection");
+  console.log("Collection element:", collection);
 
   if (!collection) {
     console.error("Collection element with ID 'collection' not found.");
@@ -12,25 +15,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Create a container for collection images if it doesn't exist
   let collectionImages = collection.querySelector("#collection-images");
+  console.log("Collection images container:", collectionImages);
+
   if (!collectionImages) {
     collectionImages = document.createElement("div");
     collectionImages.id = "collection-images";
     collection.appendChild(collectionImages);
+    console.log("Created new collection images container");
   }
 
   // Set up initial state with title and close button
   if (!collection.querySelector(".collection-title")) {
+    console.log("Setting up initial collection state");
+
     // Create and add title
     const title = document.createElement("h2");
     title.textContent = "Collection";
     title.classList.add("collection-title");
     collection.insertBefore(title, collectionImages);
+    console.log("Added collection title");
 
     // Create close button
     const closeButton = document.createElement("button");
     closeButton.textContent = "×";
     closeButton.className = "overlay-close";
     collection.appendChild(closeButton);
+    console.log("Added close button");
 
     // Add click handler to close button
     closeButton.addEventListener("click", function (e) {
@@ -42,6 +52,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Show collection by default
   collection.classList.add("active");
+  console.log("Collection shown by default");
+
+  // Add hover event listeners to images to show/hide collection button
+  const images = document.querySelectorAll(".image-container img");
+  console.log("Found image containers:", images.length);
+
+  images.forEach((img) => {
+    const container = img.closest(".image-container");
+    const button = container.querySelector(".collection-button");
+    console.log("Setting up hover events for image:", img.alt);
+
+    // Initially hide all collection buttons
+    if (button) {
+      button.style.display = "none";
+      console.log("Initially hiding collection button");
+    }
+
+    // Show button on hover
+    container.addEventListener("mouseenter", () => {
+      if (button) {
+        button.style.display = "block";
+        console.log("Showing collection button on hover");
+      }
+    });
+
+    // Hide button when mouse leaves
+    container.addEventListener("mouseleave", () => {
+      if (button) {
+        button.style.display = "none";
+        console.log("Hiding collection button on mouse leave");
+      }
+    });
+  });
 
   // Add click event listener to the Collection button
   document.addEventListener(
@@ -53,17 +96,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Set title and close button only if they don't exist
         if (!collection.querySelector(".collection-title")) {
+          console.log("Setting up collection title and close button");
+
           // Create and add title
           const title = document.createElement("h2");
           title.textContent = "Collection";
           title.classList.add("collection-title");
           collection.insertBefore(title, collectionImages);
+          console.log("Added collection title");
 
           // Create close button (matching overlay.js style)
           const closeButton = document.createElement("button");
           closeButton.textContent = "×";
           closeButton.className = "overlay-close";
           collection.appendChild(closeButton);
+          console.log("Added close button");
 
           // Add click handler to close button
           closeButton.addEventListener("click", function (e) {
@@ -75,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Show collection overlay
         collection.classList.add("active");
+        console.log("Collection overlay activated");
       }
     },
     false // Ensure it's in the bubbling phase
@@ -85,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === collection) {
       // Only close if clicking the background
       collection.classList.remove("active");
-      console.log("Collection deactivated");
+      console.log("Collection deactivated by background click");
     }
   });
 
@@ -96,17 +144,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Get container dimensions
     const containerRect = collectionImages.getBoundingClientRect();
+    console.log("Collection container dimensions:", containerRect);
 
     // Create a wrapper div for the image and resize handles
     const wrapper = document.createElement("div");
     wrapper.style.position = "absolute";
+    console.log("Created wrapper div");
 
     // Create temporary image to get natural dimensions
     const tempImg = new Image();
     tempImg.src = imageData.src;
+    console.log("Loading temporary image for dimensions");
 
     tempImg.onload = function () {
+      console.log("Temporary image loaded");
       const aspectRatio = tempImg.naturalWidth / tempImg.naturalHeight;
+      console.log("Image aspect ratio:", aspectRatio);
 
       // Set initial size maintaining aspect ratio
       const baseSize = 200; // Base size for either width or height
@@ -116,22 +169,30 @@ document.addEventListener("DOMContentLoaded", function () {
         // Landscape image
         initialWidth = baseSize;
         initialHeight = baseSize / aspectRatio;
+        console.log("Setting landscape dimensions");
       } else {
         // Portrait or square image
         initialHeight = baseSize;
         initialWidth = baseSize * aspectRatio;
+        console.log("Setting portrait/square dimensions");
       }
 
       wrapper.style.width = `${initialWidth}px`;
       wrapper.style.height = `${initialHeight}px`;
+      console.log("Set initial wrapper dimensions:", {
+        width: initialWidth,
+        height: initialHeight,
+      });
 
       // Position within container accounting for actual dimensions
-      wrapper.style.left = `${
-        Math.random() * (containerRect.width - initialWidth)
-      }px`;
-      wrapper.style.top = `${
-        Math.random() * (containerRect.height - initialHeight)
-      }px`;
+      const randomLeft = Math.random() * (containerRect.width - initialWidth);
+      const randomTop = Math.random() * (containerRect.height - initialHeight);
+      wrapper.style.left = `${randomLeft}px`;
+      wrapper.style.top = `${randomTop}px`;
+      console.log("Positioned wrapper at:", {
+        left: randomLeft,
+        top: randomTop,
+      });
     };
 
     wrapper.style.transform = "none";
@@ -139,6 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     wrapper.style.border = "1px solid #ccc";
     wrapper.style.boxSizing = "border-box";
     wrapper.style.zIndex = "100";
+    console.log("Applied wrapper styles");
 
     // Create the image element
     const newImage = document.createElement("img");
@@ -147,13 +209,17 @@ document.addEventListener("DOMContentLoaded", function () {
     newImage.style.width = "100%";
     newImage.style.height = "100%";
     newImage.style.display = "block";
+    console.log("Created new image element");
 
     // Add image to wrapper
     wrapper.appendChild(newImage);
+    console.log("Added image to wrapper");
 
     // Add resize handles
     const handleSize = 10; // Size of resize handles in pixels
     const positions = ["nw", "ne", "sw", "se"];
+    console.log("Adding resize handles");
+
     positions.forEach((pos) => {
       const handle = document.createElement("div");
       handle.className = `resize-handle ${pos}`;
@@ -188,6 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       wrapper.appendChild(handle);
+      console.log(`Added ${pos} resize handle`);
     });
 
     // Variables for dragging and resizing
@@ -223,6 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initialX = rect.left - containerRect.left;
         initialY = rect.top - containerRect.top;
         e.preventDefault();
+        console.log("Started resizing with handle:", currentHandle);
       } else {
         // Start dragging
         isDragging = true;
@@ -232,6 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initialX = rect.left - containerRect.left;
         initialY = rect.top - containerRect.top;
         e.preventDefault();
+        console.log("Started dragging");
       }
     });
 
@@ -248,6 +317,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         wrapper.style.left = `${newX}px`;
         wrapper.style.top = `${newY}px`;
+        // console.log("Dragging to position:", { x: newX, y: newY });
       } else if (isResizing && currentHandle) {
         let dx = e.clientX - startX;
         let dy = e.clientY - startY;
@@ -281,10 +351,22 @@ document.addEventListener("DOMContentLoaded", function () {
         wrapper.style.height = `${newHeight}px`;
         wrapper.style.left = `${newLeft}px`;
         wrapper.style.top = `${newTop}px`;
+        console.log("Resizing to:", {
+          width: newWidth,
+          height: newHeight,
+          left: newLeft,
+          top: newTop,
+        });
       }
     });
 
     document.addEventListener("mouseup", function (e) {
+      if (isDragging) {
+        console.log("Stopped dragging");
+      }
+      if (isResizing) {
+        console.log("Stopped resizing");
+      }
       isDragging = false;
       isResizing = false;
       currentHandle = null;
@@ -311,6 +393,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initialX = rect.left - containerRect.left;
         initialY = rect.top - containerRect.top;
         e.preventDefault();
+        console.log("Touch resize started with handle:", currentHandle);
       } else {
         // Start dragging
         isDragging = true;
@@ -321,6 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initialX = rect.left - containerRect.left;
         initialY = rect.top - containerRect.top;
         e.preventDefault();
+        console.log("Touch drag started");
       }
     });
 
@@ -338,6 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         wrapper.style.left = `${newX}px`;
         wrapper.style.top = `${newY}px`;
+        console.log("Touch dragging to:", { x: newX, y: newY });
       } else if (isResizing && currentHandle) {
         const touch = e.touches[0];
         let dx = touch.clientX - startX;
@@ -372,10 +457,22 @@ document.addEventListener("DOMContentLoaded", function () {
         wrapper.style.height = `${newHeight}px`;
         wrapper.style.left = `${newLeft}px`;
         wrapper.style.top = `${newTop}px`;
+        console.log("Touch resizing to:", {
+          width: newWidth,
+          height: newHeight,
+          left: newLeft,
+          top: newTop,
+        });
       }
     });
 
     document.addEventListener("touchend", function (e) {
+      if (isDragging) {
+        console.log("Touch drag ended");
+      }
+      if (isResizing) {
+        console.log("Touch resize ended");
+      }
       isDragging = false;
       isResizing = false;
       currentHandle = null;
@@ -383,10 +480,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Append the wrapper to the collection images container
     collectionImages.appendChild(wrapper);
+    console.log("Added wrapper to collection");
 
     // Trigger reflow and then set opacity to 1 for transition
     requestAnimationFrame(() => {
       newImage.style.opacity = "1";
+      console.log("Image transition complete");
     });
   });
 });
