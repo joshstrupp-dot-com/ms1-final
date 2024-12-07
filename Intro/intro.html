@@ -123,10 +123,25 @@
       <div class="text-column">
         <!-- Dynamic Text Elements -->
         <h1 id="text1" class="dynamic-text visible">
-          Introduce a singular artifact from the collection.
+          The Smithsonian is home to thousands of fashion artifacts.
         </h1>
         <h1 id="text2" class="dynamic-text hidden">
-          Emphasize its significance, why it's historically relevant.
+          There are costumes, illustrations, dresses sewn by Rosa Parks and
+          patent leather boots that once belonged to Bootsy Colins.
+        </h1>
+        <h1 id="text3" class="dynamic-text hidden">
+          Each neckline, silhouette, and contour an inspiration.
+        </h1>
+        <h1 id="text4" class="dynamic-text hidden">
+          If every artifact in the collection were in your closet, you’d have 12
+          million possible combinations.
+        </h1>
+        <h1 id="text5" class="dynamic-text hidden">
+          Now you can pull from the collection, piece by piece, across 12
+          topics, 300 years, and 5 museums —
+        </h1>
+        <h1 id="text6" class="dynamic-text hidden">
+          To build your own outfits.
         </h1>
         <div id="enterButton" class="enter-button hidden">Enter</div>
       </div>
@@ -138,8 +153,9 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const container = document.getElementById("sequence-container");
-        const frameCount = 149;
-        const baseNumber = 1000;
+        const startFrame = 2000; // First frame number
+        const endFrame = 2662; // Last frame number
+        const frameCount = endFrame - startFrame; // Total number of frames
         const images = [];
         let currentFrame = 0;
         let textTransitioned = false;
@@ -148,12 +164,16 @@
         // Get references to the dynamic text elements
         const text1 = document.getElementById("text1");
         const text2 = document.getElementById("text2");
+        const text3 = document.getElementById("text3");
+        const text4 = document.getElementById("text4");
+        const text5 = document.getElementById("text5");
+        const text6 = document.getElementById("text6");
 
         // Preload images
         for (let i = 0; i <= frameCount; i++) {
           const img = new Image();
-          const frameNumber = baseNumber + i;
-          img.src = `../archive/png-seq-assets/sequence1/sequence${frameNumber}.png`;
+          const frameNumber = startFrame + i; // Calculate frame number
+          img.src = `../archive/png-seq-assets/sequence2/test${frameNumber}.png`;
           img.classList.add(i === 0 ? "visible" : "hidden");
           container.appendChild(img);
           images.push(img);
@@ -185,33 +205,52 @@
             images[frameIndex].classList.remove("hidden");
             images[frameIndex].classList.add("visible");
 
-            // Show text1 when frame index is less than 50
-            if (frameIndex < 50) {
-              text2.classList.remove("visible");
-              text2.classList.add("hidden");
-              enterButton.classList.remove("visible");
-              enterButton.classList.add("hidden");
+            // Calculate actual frame number
+            const actualFrame = startFrame + frameIndex;
+
+            // Hide all texts first
+            const hideAllTexts = () => {
+              [text1, text2, text3, text4, text5, text6].forEach((text) => {
+                if (text) {
+                  text.classList.remove("visible");
+                  text.classList.add("hidden");
+                }
+              });
+            };
+
+            // Show specific text based on frame number
+            if (actualFrame < 2046) {
+              hideAllTexts();
               text1.classList.remove("hidden");
               text1.classList.add("visible");
-              textTransitioned = false;
-            }
-            // Show text2 and enter button when frame index is 50 or greater
-            else if (frameIndex >= 50 && !textTransitioned) {
-              text1.classList.remove("visible");
-              text1.classList.add("hidden");
+              enterButton.classList.remove("visible");
+              enterButton.classList.add("hidden");
+            } else if (actualFrame >= 2046 && actualFrame < 2120) {
+              hideAllTexts();
+              text2.classList.remove("hidden");
+              text2.classList.add("visible");
+            } else if (actualFrame >= 2120 && actualFrame < 2220) {
+              hideAllTexts();
+              text3.classList.remove("hidden");
+              text3.classList.add("visible");
+            } else if (actualFrame >= 2220 && actualFrame < 2370) {
+              hideAllTexts();
+              text4.classList.remove("hidden");
+              text4.classList.add("visible");
+            } else if (actualFrame >= 2370 && actualFrame < 2520) {
+              hideAllTexts();
+              text5.classList.remove("hidden");
+              text5.classList.add("visible");
+            } else if (actualFrame >= 2520) {
+              hideAllTexts();
+              text6.classList.remove("hidden");
+              text6.classList.add("visible");
 
+              // Show enter button after the last text
               setTimeout(() => {
-                text2.classList.remove("hidden");
-                text2.classList.add("visible");
-
-                // Show enter button after text2
-                setTimeout(() => {
-                  enterButton.classList.remove("hidden");
-                  enterButton.classList.add("visible");
-                }, 300);
+                enterButton.classList.remove("hidden");
+                enterButton.classList.add("visible");
               }, 300);
-
-              textTransitioned = true;
             }
 
             currentFrame = frameIndex;
