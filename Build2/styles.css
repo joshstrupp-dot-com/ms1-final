@@ -310,20 +310,6 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-/* .gallery-list img:hover {
-  transform: scale(1.05);
-} */
-
-/* Placeholder styles */
-/* li::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
-  background-size: 200% 100%;
-  /* animation: loading 1.5s infinite; */
-
 .bounding-box {
   opacity: 1;
   transition: opacity 0.2s ease;
@@ -332,11 +318,6 @@ body {
   box-sizing: border-box;
   pointer-events: none;
 }
-
-/* Show bounding box on hover #gallery-depth li:hover .bounding-box,
-.gallery-list li:hover .bounding-box {
-  opacity: 1;
-} */
 
 /*------------------------------------
   BUTTON STYLES
@@ -453,12 +434,7 @@ body {
 ------------------------------------*/
 
 .bars {
-  fill: rgba(242, 12, 31, 0.18);
-  stroke: #f20c1f;
-  stroke-width: 2px;
-  rx: 4px;
-  ry: 4px;
-  transform: translateY(25%); /* Center vertically within #visualization-bar */
+  transform: translateY(25%);
 }
 
 .node:hover {
@@ -468,15 +444,17 @@ body {
 
 .visualization-tooltip {
   opacity: 0;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
-  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
   position: absolute;
   pointer-events: none;
+  font-family: Gantari;
   font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  z-index: 100000;
 }
 
 .visualization-circle {

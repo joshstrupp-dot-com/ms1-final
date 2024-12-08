@@ -1,5 +1,21 @@
 import { loadImagesInContainer } from "./utils.js";
 
+// Add this color mapping object at the top of your file
+const categoryColors = {
+  museum: {
+    fill: "rgba(191, 181, 33, 0.18)",
+    stroke: "#bfb521",
+  },
+  topic: {
+    fill: "rgba(242, 12, 31, 0.18)",
+    stroke: "#f20c1f",
+  },
+  est_year: {
+    fill: "rgba(142, 130, 217, 0.18)",
+    stroke: "#8e82d9",
+  },
+};
+
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM Content Loaded - Initializing visualization-bar");
 
@@ -80,21 +96,18 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("X scale domain:", xScale.domain());
 
       // Create a tooltip div if it doesn't exist
-      let tooltip = d3.select("body").select("#tooltip");
-      if (tooltip.empty()) {
-        console.log("Creating new tooltip");
-        tooltip = d3
-          .select("body")
-          .append("div")
-          .attr("id", "tooltip")
-          .style("position", "absolute")
-          .style("background-color", "rgba(0, 0, 0, 0.7)")
-          .style("color", "#fff")
-          .style("padding", "5px 10px")
-          .style("border-radius", "4px")
-          .style("pointer-events", "none")
-          .style("opacity", 0);
-      }
+      const Tooltip = vis
+        .append("div")
+        .attr("class", "visualization-tooltip")
+        .style("position", "fixed")
+        .style("opacity", 0)
+        .style("pointer-events", "none")
+        .style("background-color", "rgba(0, 0, 0, 0.7)")
+        .style("color", "#fff")
+        .style("padding", "8px")
+        .style("border-radius", "4px")
+        .style("font-size", "12px")
+        .style("z-index", 100000);
 
       // Bind the data and create the bars
       console.log("Creating bars with data:", Array.from(groupedData));
@@ -110,6 +123,11 @@ document.addEventListener("DOMContentLoaded", function () {
         .append("rect")
         .attr("class", "bars")
         .style("cursor", "pointer")
+        .style("fill", categoryColors[category.toLowerCase()]?.fill)
+        .style("stroke", categoryColors[category.toLowerCase()]?.stroke)
+        .style("stroke-width", "2px")
+        .attr("rx", "4px")
+        .attr("ry", "4px")
         .attr("y", (d) => {
           console.log("Setting y position for bar:", d[0], yScale(d[0]));
           return yScale(d[0]);
@@ -159,20 +177,28 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .on("mouseover", function (event, d) {
           console.log("Mouse over bar:", d[0], "Count:", d[1].length);
-          tooltip.transition().duration(200).style("opacity", 0.9);
-          tooltip
-            .html(`${d[0]}: ${d[1].length}`)
-            .style("left", event.pageX + "px")
-            .style("top", event.pageY - 28 + "px");
+          Tooltip.style("opacity", 1);
         })
-        .on("mousemove", function (event) {
-          tooltip
-            .style("left", event.pageX + "px")
-            .style("top", event.pageY - 28 + "px");
+        .on("mousemove", function (event, d) {
+          const tooltipWidth = 150;
+          const tooltipHeight = 50;
+
+          const left = Math.min(
+            event.pageX + 10,
+            window.innerWidth - tooltipWidth - 10
+          );
+          const top = Math.min(
+            event.pageY - tooltipHeight - 10,
+            window.innerHeight - tooltipHeight - 10
+          );
+
+          Tooltip.html(`${d[0]}: ${d[1].length}`)
+            .style("left", left + "px")
+            .style("top", top + "px");
         })
         .on("mouseout", function () {
           console.log("Mouse out of bar");
-          tooltip.transition().duration(500).style("opacity", 0);
+          Tooltip.style("opacity", 0);
         });
 
       console.log("Bars added to the chart group");
