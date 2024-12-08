@@ -276,19 +276,18 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Add click handlers for all category buttons
-  const categoryButtons = Array.from(document.querySelectorAll(".button"));
+  const categoryButtons = Array.from(
+    document.querySelectorAll(".button-category")
+  );
   console.log("Category buttons found:", categoryButtons.length);
 
   categoryButtons.forEach((button) => {
     button.addEventListener("click", () => {
       console.log("Category button clicked:", button.textContent.trim());
 
-      // Skip Collection button
-      if (button.textContent.trim().toLowerCase() === "collection") {
-        return;
-      }
-
-      const selectedCategory = button.textContent.trim();
+      // Get category from data attribute instead of text content
+      const selectedCategory =
+        button.dataset.category || button.textContent.trim();
 
       // If button is already active, deactivate it and show all
       if (button.classList.contains("active")) {

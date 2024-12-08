@@ -20,20 +20,34 @@
   <body>
     <div id="header">
       <div class="title">Piece By Piece</div>
-      <div class="H3">An exploration of fashion at The Smithsonian.</div>
+      <div class="h3">An exploration of fashion at The Smithsonian.</div>
     </div>
     <!-- <div id="collection"></div> -->
     <div id="sidebar">
+      <button
+        id="closet-button"
+        class="button collection-button"
+        data-overlay="collection"
+      >
+        Closet
+      </button>
+      <div class="divider"></div>
       <div class="category-filter">
-        <button class="button" data-category="Museum">Museum</button>
-        <!-- <button class="button" data-category="Medium">Medium</button> -->
-        <!-- <button class="button" data-category="est_place">est_place</button> -->
-        <button class="button" data-category="topic">topic</button>
-        <button class="button" data-category="est_year">est_year</button>
+        <div class="sidebar-header">Filters</div>
+        <button class="button button-category" data-category="Museum">
+          <span class="color-circle" style="background-color: #bfb521"></span>
+          Museum
+        </button>
+        <button class="button button-category" data-category="topic">
+          <span class="color-circle" style="background-color: #f20c1f"></span>
+          Topic
+        </button>
+        <button class="button button-category" data-category="est_year">
+          <span class="color-circle" style="background-color: #8e82d9"></span>
+          Year
+        </button>
       </div>
-      <br />
-      <br />
-      <button class="button collection-button">Collection</button>
+
       <div id="visualization-circles"></div>
     </div>
 

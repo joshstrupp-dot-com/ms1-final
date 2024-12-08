@@ -30,10 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Create and add title
     const title = document.createElement("h2");
-    title.textContent = "Collection";
+    title.textContent = "Closet";
     title.classList.add("collection-title");
     collection.insertBefore(title, collectionImages);
-    console.log("Added collection title");
+    console.log("Added closet title");
 
     // Create close button
     const closeButton = document.createElement("button");
@@ -100,10 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
           // Create and add title
           const title = document.createElement("h2");
-          title.textContent = "Collection";
+          title.textContent = "Closet";
           title.classList.add("collection-title");
           collection.insertBefore(title, collectionImages);
-          console.log("Added collection title");
+          console.log("Added closet title");
 
           // Create close button (matching overlay.js style)
           const closeButton = document.createElement("button");
