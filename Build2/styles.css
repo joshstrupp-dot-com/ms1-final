@@ -543,3 +543,37 @@ body {
   pointer-events: none;
   z-index: 1;
 } */
+
+.custom-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-family: Gantari;
+  font-size: 14px;
+}
+
+.context-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: Gantari;
+  font-size: 14px;
+}
+
+.context-menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.context-menu-delete {
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+  padding-top: 8px;
+  color: #ff4444;
+}
+
+.context-menu-delete:hover {
+  background-color: #fff0f0;
+}

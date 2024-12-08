@@ -149,7 +149,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Create a wrapper div for the image and resize handles
     const wrapper = document.createElement("div");
     wrapper.style.position = "absolute";
-    console.log("Created wrapper div");
+
+    if (imageData.isPreloaded) {
+      // Set size if provided
+      if (imageData.size) {
+        wrapper.style.width = imageData.size.width;
+        wrapper.style.height = imageData.size.height;
+      }
+      // Set z-index for layering
+      wrapper.style.zIndex = imageData.layer;
+    } else {
+      wrapper.style.zIndex = "1"; // Default z-index for new images
+    }
+
+    addContextMenu(wrapper);
 
     // Create temporary image to get natural dimensions
     const tempImg = new Image();
@@ -162,16 +175,14 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Image aspect ratio:", aspectRatio);
 
       // Set initial size maintaining aspect ratio
-      const baseSize = 200; // Base size for either width or height
+      const baseSize = 200;
       let initialWidth, initialHeight;
 
       if (aspectRatio > 1) {
-        // Landscape image
         initialWidth = baseSize;
         initialHeight = baseSize / aspectRatio;
         console.log("Setting landscape dimensions");
       } else {
-        // Portrait or square image
         initialHeight = baseSize;
         initialWidth = baseSize * aspectRatio;
         console.log("Setting portrait/square dimensions");
@@ -184,15 +195,24 @@ document.addEventListener("DOMContentLoaded", function () {
         height: initialHeight,
       });
 
-      // Position within container accounting for actual dimensions
-      const randomLeft = Math.random() * (containerRect.width - initialWidth);
-      const randomTop = Math.random() * (containerRect.height - initialHeight);
-      wrapper.style.left = `${randomLeft}px`;
-      wrapper.style.top = `${randomTop}px`;
-      console.log("Positioned wrapper at:", {
-        left: randomLeft,
-        top: randomTop,
-      });
+      // Position the wrapper
+      if (imageData.isPreloaded && imageData.position) {
+        // Use predefined position for preloaded images
+        wrapper.style.left = imageData.position.left;
+        wrapper.style.top = imageData.position.top;
+        console.log("Positioned preloaded image at:", imageData.position);
+      } else {
+        // Use random positioning for newly added images
+        const randomLeft = Math.random() * (containerRect.width - initialWidth);
+        const randomTop =
+          Math.random() * (containerRect.height - initialHeight);
+        wrapper.style.left = `${randomLeft}px`;
+        wrapper.style.top = `${randomTop}px`;
+        console.log("Positioned new image randomly at:", {
+          left: randomLeft,
+          top: randomTop,
+        });
+      }
     };
 
     wrapper.style.transform = "none";
@@ -362,10 +382,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.addEventListener("mouseup", function (e) {
       if (isDragging) {
-        console.log("Stopped dragging");
-      }
-      if (isResizing) {
-        console.log("Stopped resizing");
+        const rect = wrapper.getBoundingClientRect();
+        const containerRect = collectionImages.getBoundingClientRect();
+        const leftVw =
+          ((rect.left - containerRect.left) / containerRect.width) * 100;
+        const topVh =
+          ((rect.top - containerRect.top) / containerRect.height) * 100;
+
+        // Get computed z-index
+        const zIndex = window.getComputedStyle(wrapper).zIndex;
+
+        // Log position, size, and layer order together
+        console.log(`Image: ${newImage.alt}`, {
+          position: {
+            left: `${leftVw.toFixed(1)}vw`,
+            top: `${topVh.toFixed(1)}vh`,
+          },
+          size: {
+            width: `${rect.width.toFixed(1)}px`,
+            height: `${rect.height.toFixed(1)}px`,
+          },
+          layer: zIndex,
+        });
       }
       isDragging = false;
       isResizing = false;
@@ -468,10 +506,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.addEventListener("touchend", function (e) {
       if (isDragging) {
-        console.log("Touch drag ended");
-      }
-      if (isResizing) {
-        console.log("Touch resize ended");
+        const rect = wrapper.getBoundingClientRect();
+        const containerRect = collectionImages.getBoundingClientRect();
+        const leftVw =
+          ((rect.left - containerRect.left) / containerRect.width) * 100;
+        const topVh =
+          ((rect.top - containerRect.top) / containerRect.height) * 100;
+
+        // Get computed z-index
+        const zIndex = window.getComputedStyle(wrapper).zIndex;
+
+        // Log position, size, and layer order together
+        console.log(`Image: ${newImage.alt}`, {
+          position: {
+            left: `${leftVw.toFixed(1)}vw`,
+            top: `${topVh.toFixed(1)}vh`,
+          },
+          size: {
+            width: `${rect.width.toFixed(1)}px`,
+            height: `${rect.height.toFixed(1)}px`,
+          },
+          layer: zIndex,
+        });
       }
       isDragging = false;
       isResizing = false;
@@ -488,4 +544,160 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Image transition complete");
     });
   });
+
+  // After initial setup but before event listeners
+  function preloadCollectionImages() {
+    console.log("Preloading collection images");
+
+    const preloadImages = [
+      {
+        src: "assets/man.png",
+        alt: "Man",
+        position: { left: "65.1vw", top: "26.7vh" },
+        size: { width: "310.9px", height: "358.0px" },
+        layer: 1, // backmost
+      },
+      {
+        src: "assets/sleeve-right.png",
+        alt: "Sleeve Right",
+        position: { left: "63.5vw", top: "39.9vh" },
+        size: { width: "142.8px", height: "158.0px" },
+        layer: 2,
+      },
+      {
+        src: "assets/dress.png",
+        alt: "Dress",
+        position: { left: "69.2vw", top: "58.2vh" },
+        size: { width: "115.5px", height: "200.0px" },
+        layer: 3,
+      },
+      {
+        src: "assets/teddy.png",
+        alt: "Teddy",
+        position: { left: "72.7vw", top: "22.7vh" },
+        size: { width: "162.0px", height: "145.7px" },
+        layer: 4,
+      },
+      {
+        src: "assets/sleeve-left.png",
+        alt: "Sleeve Left",
+        position: { left: "66.9vw", top: "35.9vh" },
+        size: { width: "101.8px", height: "108.0px" },
+        layer: 5,
+      },
+      {
+        src: "assets/hat.png",
+        alt: "Hat",
+        position: { left: "72.1vw", top: "10.7vh" },
+        size: { width: "157.0px", height: "119.5px" },
+        layer: 6,
+      },
+      {
+        src: "assets/boots.png",
+        alt: "Boots",
+        position: { left: "68.3vw", top: "72.3vh" },
+        size: { width: "200.0px", height: "150.0px" }, // Using default size since not provided
+        layer: 7, // frontmost
+      },
+    ];
+
+    preloadImages.forEach((imageData) => {
+      const imageEvent = new CustomEvent("addToCollection", {
+        detail: {
+          src: imageData.src,
+          alt: imageData.alt,
+          isPreloaded: true,
+          position: imageData.position,
+          size: imageData.size,
+          layer: imageData.layer,
+        },
+      });
+
+      document.dispatchEvent(imageEvent);
+      console.log(
+        "Preloaded image:",
+        imageData.src,
+        "at position:",
+        imageData.position,
+        "with size:",
+        imageData.size,
+        "and layer:",
+        imageData.layer
+      );
+    });
+  }
+
+  // Call the preload function after collection is initialized
+  preloadCollectionImages();
+
+  // Add this function after your other event listeners
+  function addContextMenu(wrapper) {
+    wrapper.addEventListener("contextmenu", function (e) {
+      e.preventDefault(); // Prevent default context menu
+
+      // Create custom context menu with remove option
+      const contextMenu = document.createElement("div");
+      contextMenu.className = "custom-context-menu";
+      contextMenu.innerHTML = `
+        <div class="context-menu-item" data-action="bring-front">Bring to Front</div>
+        <div class="context-menu-item" data-action="send-back">Send to Back</div>
+        <div class="context-menu-item context-menu-delete" data-action="remove">Remove from Closet</div>
+      `;
+
+      // Position the menu at click location
+      contextMenu.style.left = `${e.clientX}px`;
+      contextMenu.style.top = `${e.clientY}px`;
+      document.body.appendChild(contextMenu);
+
+      // Handle menu item clicks
+      contextMenu.addEventListener("click", function (menuEvent) {
+        const action = menuEvent.target.dataset.action;
+        if (action === "bring-front") {
+          wrapper.style.zIndex = getHighestZIndex() + 1;
+        } else if (action === "send-back") {
+          wrapper.style.zIndex = getLowestZIndex() - 1;
+        } else if (action === "remove") {
+          // Fade out animation
+          wrapper.style.transition = "opacity 0.3s ease-out";
+          wrapper.style.opacity = "0";
+
+          // Remove after animation
+          setTimeout(() => {
+            wrapper.remove();
+            console.log("Image removed from collection");
+          }, 300);
+        }
+
+        // Remove menu after action
+        contextMenu.remove();
+      });
+
+      // Remove menu when clicking elsewhere
+      document.addEventListener("click", function removeMenu() {
+        contextMenu.remove();
+        document.removeEventListener("click", removeMenu);
+      });
+    });
+  }
+
+  // Helper functions to manage z-index
+  function getHighestZIndex() {
+    const wrappers = document.querySelectorAll("#collection-images > div");
+    let highest = 0;
+    wrappers.forEach((w) => {
+      const z = parseInt(window.getComputedStyle(w).zIndex) || 0;
+      highest = Math.max(highest, z);
+    });
+    return highest;
+  }
+
+  function getLowestZIndex() {
+    const wrappers = document.querySelectorAll("#collection-images > div");
+    let lowest = 0;
+    wrappers.forEach((w) => {
+      const z = parseInt(window.getComputedStyle(w).zIndex) || 0;
+      lowest = Math.min(lowest, z);
+    });
+    return lowest;
+  }
 });
