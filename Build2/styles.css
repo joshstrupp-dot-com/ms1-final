@@ -51,9 +51,6 @@ body {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
   padding: 0.2rem;
-  background-color: #f20c1f2e;
-  color: #000;
-  border: 3px solid #f20c1f;
   font-family: Gantari;
   font-size: 18px;
   font-style: normal;
@@ -66,6 +63,31 @@ body {
   overflow-y: auto;
   text-align: center;
   text-transform: uppercase;
+  border-width: 3px;
+  border-style: solid;
+}
+
+/* Museum category */
+#gallery-depth.cat-selected.museum-filter {
+  background-color: rgba(191, 181, 33, 0.18); /* #bfb521 with transparency */
+  border-color: #bfb521;
+}
+
+/* Topic category */
+#gallery-depth.cat-selected.topic-filter {
+  background-color: rgba(242, 12, 31, 0.18); /* #f20c1f with transparency */
+  border-color: #f20c1f;
+}
+
+/* Est_year category */
+#gallery-depth.cat-selected.est_year-filter {
+  background-color: rgba(142, 130, 217, 0.18); /* #8e82d9 with transparency */
+  border-color: #8e82d9;
+}
+
+#gallery-depth.cat-selected.visualization-filter {
+  background-color: rgba(0, 0, 0, 0.18);
+  border-color: #000;
 }
 
 /* Visualization bar */
@@ -73,7 +95,7 @@ body {
   position: fixed;
   top: 0;
   bottom: 0;
-  left: 70vw;
+  left: 71vw;
   right: 20vw;
   overflow: hidden;
 }
@@ -431,7 +453,12 @@ body {
 ------------------------------------*/
 
 .bars {
-  fill: steelblue;
+  fill: rgba(242, 12, 31, 0.18);
+  stroke: #f20c1f;
+  stroke-width: 2px;
+  rx: 4px;
+  ry: 4px;
+  transform: translateY(25%); /* Center vertically within #visualization-bar */
 }
 
 .node:hover {

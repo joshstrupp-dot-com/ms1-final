@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .on("mouseleave", mouseleave)
       .on("click", function (event, d) {
         console.log("Circle clicked:", d.name);
-
+        const galleryDepth = document.getElementById("gallery-depth");
         const isActive = d3.select(this).classed("active-circle");
         console.log("Circle active state:", isActive);
 
@@ -207,6 +207,8 @@ document.addEventListener("DOMContentLoaded", function () {
             circle.name === currentlySelectedName ? 1 : 0.3
           );
 
+          galleryDepth.classList.add("cat-selected", "visualization-filter");
+
           const filterEvent = new CustomEvent("filterChanged", {
             detail: {
               category: "Name",
@@ -214,15 +216,12 @@ document.addEventListener("DOMContentLoaded", function () {
             },
           });
           document.dispatchEvent(filterEvent);
-          console.log("Dispatched filterChanged event with:", {
-            category: "Name",
-            value: d.name,
-          });
         } else {
           currentlySelectedName = null;
           console.log("Clearing active circle");
 
           node.style("opacity", 1);
+          galleryDepth.classList.remove("cat-selected", "visualization-filter");
 
           const clearFilterEvent = new CustomEvent("filterChanged", {
             detail: {
@@ -231,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
             },
           });
           document.dispatchEvent(clearFilterEvent);
-          console.log("Dispatched filterChanged event to clear filter");
         }
       })
       .call(
@@ -295,21 +293,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Listen for filter changes from other visualizations
     document.addEventListener("filterChanged", function (e) {
-      const filterName = e.detail.name;
-      console.log("Filter changed event received:", filterName);
+      const galleryDepth = document.getElementById("gallery-depth");
+      console.log("Filter changed event received:", e.detail);
 
-      if (filterName) {
-        currentlySelectedName = filterName;
-        console.log("Updating visualization for filter:", filterName);
+      if (e.detail.category === "Name" && e.detail.value) {
+        currentlySelectedName = e.detail.value;
+        console.log(
+          "Updating visualization for filter:",
+          currentlySelectedName
+        );
 
         node
-          .classed("active-circle", (d) => d.name === filterName)
-          .style("opacity", (d) => (d.name === filterName ? 1 : 0.3));
-      } else {
+          .classed("active-circle", (d) => d.name === currentlySelectedName)
+          .style("opacity", (d) =>
+            d.name === currentlySelectedName ? 1 : 0.3
+          );
+
+        galleryDepth.classList.add("cat-selected", "visualization-filter");
+      } else if (!e.detail.maintainStyle) {
+        // Only clear styles if maintainStyle is false
         currentlySelectedName = null;
         console.log("Clearing visualization filter");
 
         node.classed("active-circle", false).style("opacity", 1);
+        galleryDepth.classList.remove("cat-selected", "visualization-filter");
       }
     });
   });

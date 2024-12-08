@@ -191,12 +191,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // Move to next page and mark loading as done
     currentPage++;
     isLoading = false;
-    console.log("Finished loading more images");
+    // console.log("Finished loading more images");
   }
 
   // === Start: Listen for 'filterChanged' Event ===
   document.addEventListener("filterChanged", function (e) {
-    console.log("Filter changed event received:", e.detail);
+    // console.log("Filter changed event received:", e.detail);
     const { category, value } = e.detail;
 
     if (category && value) {
@@ -211,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Reset and rebuild the gallery when category changes
   function renderGallery(category) {
-    console.log("Rendering gallery for category:", category);
+    // console.log("Rendering gallery for category:", category);
     // Reset to first page
     currentPage = 1;
     currentCategory = category;
@@ -220,9 +220,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const galleryDepth = document.getElementById("gallery-depth");
     galleryDepth.innerHTML = "";
 
+    // Remove any existing filter classes
+    galleryDepth.classList.remove(
+      "museum-filter",
+      "topic-filter",
+      "est_year-filter"
+    );
+
     // Adjust layout when category is selected
     if (category.toLowerCase() !== "all") {
       galleryDepth.classList.add("cat-selected");
+      // Add the category-specific filter class
+      galleryDepth.classList.add(`${category.toLowerCase()}-filter`);
     } else {
       galleryDepth.classList.remove("cat-selected");
     }

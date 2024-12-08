@@ -56,9 +56,20 @@ document.addEventListener("DOMContentLoaded", function () {
       // Define the Y Scale (Band Scale for group names)
       const yScale = d3
         .scaleBand()
-        .domain(Array.from(groupedData.keys()))
+        .domain(
+          Array.from(groupedData.keys())
+            .filter((key) => key && key.trim() !== "")
+            .sort((a, b) => {
+              // For numeric values (like years)
+              if (!isNaN(a) && !isNaN(b)) {
+                return Number(a) - Number(b);
+              }
+              // For text values
+              return a.localeCompare(b);
+            })
+        )
         .range([0, chartHeight])
-        .padding(0.1); // Adjust padding as needed
+        .padding(0.1);
       console.log("Y scale domain:", yScale.domain());
 
       // Define the X Scale (Log Scale for item counts)
@@ -90,7 +101,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
       chartGroup
         .selectAll(".bars")
-        .data(Array.from(groupedData))
+        .data(
+          Array.from(groupedData).filter(
+            ([key, value]) => key && key.trim() !== ""
+          )
+        )
         .enter()
         .append("rect")
         .attr("class", "bars")
@@ -115,21 +130,32 @@ document.addEventListener("DOMContentLoaded", function () {
         // Updated click handler
         .on("click", function (event, d) {
           const selectedCategory = category;
-          const selectedValue = d[0]; // The value of the bar clicked (e.g., "1840")
+          const selectedValue = d[0];
           console.log("Bar clicked:", selectedCategory, selectedValue);
 
-          // Dispatch a custom event with the selected category and value
+          const galleryDepth = document.getElementById("gallery-depth");
+
+          // Ensure cat-selected class is present
+          galleryDepth.classList.add("cat-selected");
+
+          // Add the appropriate filter class based on category
+          galleryDepth.classList.remove(
+            "museum-filter",
+            "topic-filter",
+            "est_year-filter"
+          );
+          galleryDepth.classList.add(
+            `${selectedCategory.toLowerCase()}-filter`
+          );
+
           const filterEvent = new CustomEvent("filterChanged", {
             detail: {
               category: selectedCategory,
               value: selectedValue,
+              maintainStyle: true,
             },
           });
           document.dispatchEvent(filterEvent);
-          console.log("Dispatched filterChanged event with:", {
-            category: selectedCategory,
-            value: selectedValue,
-          });
         })
         .on("mouseover", function (event, d) {
           console.log("Mouse over bar:", d[0], "Count:", d[1].length);
@@ -174,10 +200,17 @@ document.addEventListener("DOMContentLoaded", function () {
       if (category.toLowerCase() === "all") {
         console.log("All category selected - removing visualization");
         removeVisualization();
-        galleryDepth.classList.remove("cat-selected");
+        galleryDepth.classList.remove(
+          "cat-selected",
+          "museum-filter",
+          "topic-filter",
+          "est_year-filter"
+        );
       } else {
         console.log("Category selected:", category);
         galleryDepth.classList.add("cat-selected");
+        galleryDepth.classList.add(`${category.toLowerCase()}-filter`);
+
         const groupedData = d3.group(
           window.dataStore.allData,
           (d) => d[category]
