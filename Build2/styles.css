@@ -65,6 +65,7 @@ body {
   text-transform: uppercase;
   border-width: 3px;
   border-style: solid;
+  transition: width 0.3s ease;
 }
 
 /* Museum category */
@@ -303,7 +304,9 @@ body {
   width: 100%;
   height: auto;
   object-fit: cover;
-  border-radius: 3px;
+  border-radius: 4px;
+  mask-border-radius: 4px;
+  -webkit-mask-border-radius: 4px;
   transition: transform 0.2s, opacity 1s ease;
   opacity: 1;
   cursor: pointer;
@@ -435,6 +438,7 @@ body {
 
 .bars {
   transform: translateY(25%);
+  transition: transform 5s ease, fill 6s ease;
 }
 
 .node:hover {

@@ -128,24 +128,20 @@ document.addEventListener("DOMContentLoaded", function () {
         .style("stroke-width", "2px")
         .attr("rx", "4px")
         .attr("ry", "4px")
-        .attr("y", (d) => {
-          console.log("Setting y position for bar:", d[0], yScale(d[0]));
-          return yScale(d[0]);
-        })
+        .attr("y", (d) => yScale(d[0]))
         .attr("height", yScale.bandwidth())
-        .attr("x", (d) => {
-          console.log(
-            "Setting x position for bar:",
-            d[0],
-            chartWidth - xScale(d[1].length)
-          );
-          return chartWidth - xScale(d[1].length);
-        })
-        .attr("width", (d) => {
-          console.log("Setting width for bar:", d[0], xScale(d[1].length));
-          return xScale(d[1].length);
-        })
-        // Updated click handler
+        .attr("x", chartWidth)
+        .attr("width", 0)
+        .transition()
+        .delay((d, i) => i * 100) // Add 100ms delay per bar
+        .duration(1500)
+        .ease(d3.easeElastic)
+        .attr("x", (d) => chartWidth - xScale(d[1].length))
+        .attr("width", (d) => xScale(d[1].length));
+
+      // Updated click handler
+      chartGroup
+        .selectAll(".bars")
         .on("click", function (event, d) {
           const selectedCategory = category;
           const selectedValue = d[0];
@@ -207,7 +203,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to remove visualization
     function removeVisualization() {
       console.log("Removing visualization");
-      svg.selectAll(".visualization-group, .chart-group").transition().remove();
+      svg
+        .selectAll(".bars")
+        .transition()
+        .duration(500)
+        .attr("opacity", 0)
+        .on("end", function () {
+          d3.select(this).remove();
+        });
       console.log("Visualization removed");
     }
 
