@@ -1,6 +1,14 @@
 //  * Implements lazy loading for images using the Intersection Observer API.
 //  * This function improves page performance by only loading images when they
 //  * become visible in the viewport.
+export const FILTER_CLASSES = [
+  "visualization-filter",
+  "museum-filter",
+  "topic-filter",
+  "est_year-filter",
+  // Add other category filter classes here as needed
+];
+
 export function observeImages(images) {
   // console.log("Setting up lazy loading for images:", images.length);
 
@@ -241,4 +249,14 @@ export function loadImagesInContainer(container) {
     });
   });
   return Promise.all(promises);
+}
+
+/**
+ * Removes all filter-related classes from the specified element.
+ * @param {HTMLElement} element - The element from which to remove filter classes.
+ */
+export function removeAllFilterClasses(element) {
+  FILTER_CLASSES.forEach((filterClass) => {
+    element.classList.remove(filterClass);
+  });
 }

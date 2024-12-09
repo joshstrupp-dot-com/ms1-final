@@ -298,6 +298,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const selectedCategory =
         button.dataset.category || button.textContent.trim();
 
+      // Remove visualization-filter class when switching to category filter
+      const galleryDepth = document.getElementById("gallery-depth");
+      galleryDepth.classList.remove("visualization-filter");
+
       // If button is already active, deactivate it and show all
       if (button.classList.contains("active")) {
         console.log("Deactivating active category");

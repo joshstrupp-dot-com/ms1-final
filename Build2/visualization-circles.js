@@ -310,11 +310,14 @@ document.addEventListener("DOMContentLoaded", function () {
           );
 
         galleryDepth.classList.add("cat-selected", "visualization-filter");
+      } else if (e.detail.category) {
+        // If switching to a different category filter
+        currentlySelectedName = null;
+        node.classed("active-circle", false).style("opacity", 1);
+        galleryDepth.classList.remove("visualization-filter");
       } else if (!e.detail.maintainStyle) {
         // Only clear styles if maintainStyle is false
         currentlySelectedName = null;
-        console.log("Clearing visualization filter");
-
         node.classed("active-circle", false).style("opacity", 1);
         galleryDepth.classList.remove("cat-selected", "visualization-filter");
       }
