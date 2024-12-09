@@ -709,4 +709,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     return lowest;
   }
+
+  // Create and add "Clear All" button
+  const clearAllButton = document.createElement("button");
+  clearAllButton.textContent = "Clear All";
+  clearAllButton.className = "clear-all-button";
+  collection.insertBefore(clearAllButton, collection.firstChild);
+
+  // Add click handler to "Clear All" button
+  clearAllButton.addEventListener("click", function () {
+    const collectionImages = document.querySelector("#collection-images");
+    if (collectionImages) {
+      collectionImages.innerHTML = ""; // Clear all images
+      console.log("All images cleared from collection");
+    }
+  });
 });

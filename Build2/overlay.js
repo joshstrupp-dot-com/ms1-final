@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       overlay.appendChild(imageContainer);
 
       // After the image loads, draw the bounding box
+      // After the image loads, draw the bounding box
       overlayImage.onload = function () {
         if (boundingBoxData) {
           try {
@@ -92,73 +93,37 @@ document.addEventListener("DOMContentLoaded", function () {
       addToCollectionButton.className = "button add-to-collection";
       imageContainer.appendChild(addToCollectionButton);
 
-      // Create the "+ Add Crop" button
+      // Create the "+ Crop" button
       const addCropButton = document.createElement("button");
-      addCropButton.textContent = "+ Image Crop";
-      addCropButton.className = "button add-to-collection";
-      addCropButton.style.top = "45px"; // Position below first button
+      addCropButton.textContent = "+ Crop";
+      addCropButton.className = "button add-crop";
+      addCropButton.style.position = "absolute";
+      addCropButton.style.display = "none"; // Initially hidden
       imageContainer.appendChild(addCropButton);
 
       // Append the image container to the overlay
       overlay.appendChild(imageContainer);
 
-      // Create text box div
-      const textBox = document.createElement("div");
-      textBox.classList.add("text-box");
+      // Add hover effect to show "+ Crop" button
+      overlayImage.addEventListener("mouseenter", function () {
+        addCropButton.style.display = "block";
+      });
 
-      // Create formatted content with proper styling
-      textBox.innerHTML = `
-        <h2 class="title">${e.target.dataset.title || "Untitled"}</h2>
-        <div class="metadata">
-          <p class="h3"><strong>Museum:</strong> ${
-            e.target.dataset.museum || "Unknown"
-          }</p>
+      overlayImage.addEventListener("mouseleave", function () {
+        addCropButton.style.display = "none";
+      });
 
-          <p class="h3"><strong>Medium:</strong> ${
-            e.target.dataset.medium || "Unknown"
-          }</p>
-
-          <p class="h3"><strong>Place:</strong> ${
-            e.target.dataset.est_place || "Unknown"
-          }</p>
-
-          <p class="h3"><strong>Topic:</strong> ${
-            e.target.dataset.topic || "Unknown"
-          }</p>
-
-          <p class="h3"><strong>Year:</strong> ${
-            e.target.dataset.est_year || "Unknown"
-          }</p>
-
-          <p class="h3 description"><strong>Description:</strong> ${
-            e.target.dataset.description || "No description available"
-          }</p>
-        </div>
-      `;
-
-      // Add text box to overlay
-      overlay.appendChild(textBox);
-
-      // Create close button
-      const closeButton = document.createElement("button");
-      closeButton.textContent = "×";
-      closeButton.className = "overlay-close";
-      overlay.appendChild(closeButton);
-
-      // Add click handler to close button
-      closeButton.addEventListener("click", function (e) {
-        e.stopPropagation(); // Prevent event from bubbling to overlay
-        overlay.classList.remove("active");
-        console.log("Overlay closed via button");
+      // Move "+ Crop" button with cursor
+      overlayImage.addEventListener("mousemove", function (e) {
+        const rect = overlayImage.getBoundingClientRect();
+        addCropButton.style.left = `${e.clientX - rect.left}px`;
+        addCropButton.style.top = `${e.clientY - rect.top}px`;
       });
 
       // Add click handler to the "+ Add to Collection" button
       addToCollectionButton.addEventListener("click", function (e) {
         e.stopPropagation(); // Prevent event from bubbling to overlay
-        // Add clicked class
         this.classList.add("clicked");
-
-        // Change button text
         this.textContent = "Added to Collection";
 
         // Implement your add to collection logic here
@@ -187,11 +152,11 @@ document.addEventListener("DOMContentLoaded", function () {
         document.dispatchEvent(addToCollectionEvent);
       });
 
-      // Add click handler to the "+ Add Crop" button
-      addCropButton.addEventListener("click", function (e) {
+      // Add click handler to the image for "+ Crop"
+      overlayImage.addEventListener("click", function (e) {
         e.stopPropagation();
-        this.classList.add("clicked");
-        this.textContent = "Added to Collection";
+        addCropButton.classList.add("clicked");
+        addCropButton.textContent = "Added to Collection";
 
         const croppedImagePath =
           "../" + (overlayImage.dataset.cropped_image_path || "Unknown");
@@ -209,6 +174,71 @@ document.addEventListener("DOMContentLoaded", function () {
           detail: imageData,
         });
         document.dispatchEvent(addToCollectionEvent);
+      });
+
+      // Create text box div
+      const textBox = document.createElement("div");
+      textBox.classList.add("text-box");
+
+      // Function to safely retrieve dataset values
+      const getValidData = (data) => {
+        return data && data !== "Unknown" ? data : null;
+      };
+
+      // Retrieve and validate dataset values
+      const title = getValidData(e.target.dataset.title) || "Untitled";
+      const museum = getValidData(e.target.dataset.museum);
+      const medium = getValidData(e.target.dataset.medium);
+      const place = getValidData(e.target.dataset.est_place);
+      const topic = getValidData(e.target.dataset.topic);
+      const year = getValidData(e.target.dataset.est_year);
+      const description = getValidData(e.target.dataset.description);
+
+      // Initialize metadata HTML
+      let metadataHTML = '<div class="metadata">';
+
+      // Conditionally add each field if it's valid
+      if (museum) {
+        metadataHTML += `<p class="h3"><strong>Museum:</strong> <span class="museum-span">${museum}</span></p>`;
+      }
+      if (medium) {
+        metadataHTML += `<p class="h3"><strong>Medium:</strong> ${medium}</p>`;
+      }
+      if (place) {
+        metadataHTML += `<p class="h3"><strong>Place:</strong> ${place}</p>`;
+      }
+      if (topic) {
+        metadataHTML += `<p class="h3"><strong>Topic:</strong> <span class="topic-span">${topic}</span></p>`;
+      }
+      if (year) {
+        metadataHTML += `<p class="h3"><strong>Year:</strong> <span class="year-span">${year}</span></p>`;
+      }
+      if (description) {
+        metadataHTML += `<p class="h3 description"><strong>Description:</strong> ${description}</p>`;
+      }
+
+      metadataHTML += "</div>";
+
+      // Construct the final innerHTML
+      textBox.innerHTML = `
+        <h2 class="title">${title}</h2>
+        ${metadataHTML}
+      `;
+
+      // Add text box to overlay
+      overlay.appendChild(textBox);
+
+      // Create close button
+      const closeButton = document.createElement("button");
+      closeButton.textContent = "×";
+      closeButton.className = "overlay-close";
+      overlay.appendChild(closeButton);
+
+      // Add click handler to close button
+      closeButton.addEventListener("click", function (e) {
+        e.stopPropagation(); // Prevent event from bubbling to overlay
+        overlay.classList.remove("active");
+        console.log("Overlay closed via button");
       });
     }
   });
