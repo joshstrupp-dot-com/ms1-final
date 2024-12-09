@@ -189,20 +189,22 @@ body {
 #overlay,
 #collection {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 2.5%;
+  left: 2.5%;
+  width: 95%;
+  height: 95%;
   opacity: 1;
   z-index: 100;
   visibility: hidden;
-  transition: visibility 0.3s ease;
+  /* transition: visibility 0.3s ease; */
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 2rem;
   padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #000;
 }
 
 /* Semi-transparent background */
@@ -215,7 +217,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: var(--color-base);
-  opacity: 0.95;
+  opacity: 1;
   z-index: -1;
 }
 
@@ -227,8 +229,8 @@ body {
 /* Close button */
 .overlay-close {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 4%;
+  right: 5%;
   padding: 10px;
   background: none;
   border: none;
@@ -243,10 +245,11 @@ body {
   background-color: white;
   height: 90vh;
   opacity: 0.5;
-  width: 35vw;
+  width: 50vw;
   padding: 2rem;
   overflow-y: auto;
-  border-radius: 8px;
+  border-radius: 4px;
+  font-family: Gantari;
 }
 
 #overlay.active img {

@@ -110,22 +110,27 @@ document.addEventListener("DOMContentLoaded", function () {
       textBox.innerHTML = `
         <h2 class="title">${e.target.dataset.title || "Untitled"}</h2>
         <div class="metadata">
-          <p class="H3"><strong>Museum:</strong> ${
+          <p class="h3"><strong>Museum:</strong> ${
             e.target.dataset.museum || "Unknown"
           }</p>
-          <p class="H3"><strong>Medium:</strong> ${
+
+          <p class="h3"><strong>Medium:</strong> ${
             e.target.dataset.medium || "Unknown"
           }</p>
-          <p class="H3"><strong>Place:</strong> ${
+
+          <p class="h3"><strong>Place:</strong> ${
             e.target.dataset.est_place || "Unknown"
           }</p>
-          <p class="H3"><strong>Topic:</strong> ${
+
+          <p class="h3"><strong>Topic:</strong> ${
             e.target.dataset.topic || "Unknown"
           }</p>
-          <p class="H3"><strong>Year:</strong> ${
+
+          <p class="h3"><strong>Year:</strong> ${
             e.target.dataset.est_year || "Unknown"
           }</p>
-          <p class="H3 description"><strong>Description:</strong> ${
+
+          <p class="h3 description"><strong>Description:</strong> ${
             e.target.dataset.description || "No description available"
           }</p>
         </div>
