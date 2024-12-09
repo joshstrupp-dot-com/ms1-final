@@ -126,18 +126,6 @@
         line-height: 3; /* Center text vertically */
       }
 
-      /* .button {
-  padding: 4% 25%;
-  margin: 5px auto;
-  background: #f2eeeb;
-  border: 1px solid #000;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  color: #000;
-  display: block;
-} */
-
       .enter-button.visible {
         opacity: 1;
         pointer-events: auto;
@@ -169,6 +157,24 @@
       .museum-span {
         background: rgba(191, 181, 33, 0.18);
       }
+
+      .scroll-indicator {
+        transform-origin: left center;
+        transform: scale(0.8);
+        margin-top: 12px;
+        animation: bobbing 1.5s ease-in-out infinite;
+        display: relative;
+      }
+
+      @keyframes bobbing {
+        0%,
+        100% {
+          transform: scale(0.8) translateY(0);
+        }
+        50% {
+          transform: scale(0.8) translateY(-3px);
+        }
+      }
     </style>
   </head>
   <body>
@@ -177,6 +183,9 @@
         <!-- Dynamic Text Elements -->
         <h1 id="text1" class="dynamic-text visible">
           The Smithsonian is home to thousands of fashion artifacts.
+          <div class="scroll-indicator">
+            <img src="assets/SVG/scroll.svg" alt="Scroll down" />
+          </div>
         </h1>
         <h1 id="text2" class="dynamic-text hidden">
           There are costumes, illustrations, dresses sewn by Rosa Parks and

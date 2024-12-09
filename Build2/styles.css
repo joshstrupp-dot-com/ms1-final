@@ -258,7 +258,7 @@ body {
 
 .collection-title {
   position: absolute;
-  top: 20px;
+  top: 5%;
   left: 50%;
   transform: translateX(-50%);
   font-family: Avenue;
@@ -266,6 +266,19 @@ body {
   color: black;
   margin: 0;
   padding: 0;
+}
+
+.collection-subtitle {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
 }
 
 .button.collection-button {

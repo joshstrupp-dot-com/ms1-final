@@ -30,10 +30,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Create and add title
     const title = document.createElement("h2");
-    title.textContent = "Closet";
+    title.textContent = "Your Closet";
     title.classList.add("collection-title");
     collection.insertBefore(title, collectionImages);
     console.log("Added closet title");
+
+    // Create and add subtitle text
+    const subtitle = document.createElement("p");
+    subtitle.innerHTML =
+      "Click and drag to mix and match.<br>Right click to delete or re-order.";
+    subtitle.classList.add("collection-subtitle");
+    subtitle.style.textAlign = "center";
+    collection.insertBefore(subtitle, collectionImages);
+    console.log("Added subtitle text");
 
     // Create close button
     const closeButton = document.createElement("button");

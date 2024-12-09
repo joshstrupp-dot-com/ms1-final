@@ -72,9 +72,11 @@ document.addEventListener("DOMContentLoaded", function () {
             boundingBoxDiv.style.top = `${y1}px`;
             boundingBoxDiv.style.width = `${x2 - x1}px`;
             boundingBoxDiv.style.height = `${y2 - y1}px`;
-            boundingBoxDiv.style.border = "2px solid red";
+            boundingBoxDiv.style.border = "2px dashed white";
             boundingBoxDiv.style.boxSizing = "border-box";
             boundingBoxDiv.style.pointerEvents = "none"; // Allow clicks through the box
+            boundingBoxDiv.style.filter =
+              "drop-shadow(0 0 2px rgba(0,0,0,0.5))";
 
             // Append the bounding box div to the image container
             imageContainer.appendChild(boundingBoxDiv);
