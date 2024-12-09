@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
       addToCollectionButton.addEventListener("click", function (e) {
         e.stopPropagation(); // Prevent event from bubbling to overlay
         this.classList.add("clicked");
-        this.textContent = "Added to Collection";
+        this.textContent = "Added to Closet";
 
         // Implement your add to collection logic here
         console.log("+ Add to Collection button clicked");
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
       overlayImage.addEventListener("click", function (e) {
         e.stopPropagation();
         addCropButton.classList.add("clicked");
-        addCropButton.textContent = "Added to Collection";
+        addCropButton.textContent = "Added to Closet";
 
         const croppedImagePath =
           "../" + (overlayImage.dataset.cropped_image_path || "Unknown");

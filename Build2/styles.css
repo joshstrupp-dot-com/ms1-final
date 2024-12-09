@@ -643,29 +643,14 @@ body {
   transition: background-color 0.3s ease;
 }
 
-/* .button-category {
-  padding: 8px 16px;
-  margin: 1px;
-  color: #000;
-  font-family: Gantari;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: -0.154px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 3px;
-  width: 60%;
-  max-width: 160px;
-} */
-
 .clear-all-button:hover {
   background-color: #d32f2f;
   color: white;
+}
+
+.active-circle {
+  opacity: 1 !important;
+  stroke: #000;
+  stroke-width: 2px;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
 }

@@ -562,49 +562,49 @@ document.addEventListener("DOMContentLoaded", function () {
       {
         src: "assets/man.png",
         alt: "Man",
-        position: { left: "65.1vw", top: "26.7vh" },
-        size: { width: "310.9px", height: "358.0px" },
+        position: { left: "55.1vw", top: "26.7vh" },
+        size: { width: "510.9px", height: "558.0px" },
         layer: 1, // backmost
       },
       {
         src: "assets/sleeve-right.png",
         alt: "Sleeve Right",
-        position: { left: "63.5vw", top: "39.9vh" },
+        position: { left: "53.5vw", top: "39.9vh" },
         size: { width: "142.8px", height: "158.0px" },
         layer: 2,
       },
       {
         src: "assets/dress.png",
         alt: "Dress",
-        position: { left: "69.2vw", top: "58.2vh" },
+        position: { left: "59.2vw", top: "58.2vh" },
         size: { width: "115.5px", height: "200.0px" },
         layer: 3,
       },
       {
         src: "assets/teddy.png",
         alt: "Teddy",
-        position: { left: "72.7vw", top: "22.7vh" },
+        position: { left: "62.7vw", top: "22.7vh" },
         size: { width: "162.0px", height: "145.7px" },
         layer: 4,
       },
       {
         src: "assets/sleeve-left.png",
         alt: "Sleeve Left",
-        position: { left: "66.9vw", top: "35.9vh" },
+        position: { left: "56.9vw", top: "35.9vh" },
         size: { width: "101.8px", height: "108.0px" },
         layer: 5,
       },
       {
         src: "assets/hat.png",
         alt: "Hat",
-        position: { left: "72.1vw", top: "10.7vh" },
+        position: { left: "62.1vw", top: "10.7vh" },
         size: { width: "157.0px", height: "119.5px" },
         layer: 6,
       },
       {
         src: "assets/boots.png",
         alt: "Boots",
-        position: { left: "68.3vw", top: "72.3vh" },
+        position: { left: "58.3vw", top: "62.3vh" },
         size: { width: "200.0px", height: "150.0px" }, // Using default size since not provided
         layer: 7, // frontmost
       },
@@ -664,7 +664,23 @@ document.addEventListener("DOMContentLoaded", function () {
         if (action === "bring-front") {
           wrapper.style.zIndex = getHighestZIndex() + 1;
         } else if (action === "send-back") {
-          wrapper.style.zIndex = getLowestZIndex() - 1;
+          const lowestZ = getLowestZIndex();
+          if (lowestZ > 1) {
+            wrapper.style.zIndex = lowestZ - 1;
+          } else {
+            wrapper.style.zIndex = 1;
+            // Shift all other elements up by 1 if necessary
+            const wrappers = document.querySelectorAll(
+              "#collection-images > div"
+            );
+            wrappers.forEach((w) => {
+              if (w !== wrapper) {
+                const currentZ =
+                  parseInt(window.getComputedStyle(w).zIndex) || 1;
+                w.style.zIndex = currentZ + 1;
+              }
+            });
+          }
         } else if (action === "remove") {
           // Fade out animation
           wrapper.style.transition = "opacity 0.3s ease-out";
@@ -692,7 +708,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Helper functions to manage z-index
   function getHighestZIndex() {
     const wrappers = document.querySelectorAll("#collection-images > div");
-    let highest = 0;
+    let highest = 1; // Start at 1 instead of 0
     wrappers.forEach((w) => {
       const z = parseInt(window.getComputedStyle(w).zIndex) || 0;
       highest = Math.max(highest, z);
@@ -702,10 +718,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getLowestZIndex() {
     const wrappers = document.querySelectorAll("#collection-images > div");
-    let lowest = 0;
+    let lowest = 1; // Initialize at 1
     wrappers.forEach((w) => {
-      const z = parseInt(window.getComputedStyle(w).zIndex) || 0;
-      lowest = Math.min(lowest, z);
+      const z = parseInt(window.getComputedStyle(w).zIndex) || 1;
+      if (z > 0) {
+        // Only consider positive z-indices
+        lowest = lowest === 1 ? z : Math.min(lowest, z);
+      }
     });
     return lowest;
   }
