@@ -218,7 +218,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         const container = document.getElementById("sequence-container");
         const startFrame = 2000; // First frame number
-        const endFrame = 2662; // Last frame number
+        const endFrame = 2552; // Last frame number
         const frameCount = endFrame - startFrame; // Total number of frames
         const images = [];
         let currentFrame = 0;
@@ -237,7 +237,7 @@
         for (let i = 0; i <= frameCount; i++) {
           const img = new Image();
           const frameNumber = startFrame + i; // Calculate frame number
-          img.src = `sequence2/test${frameNumber}.png`;
+          img.src = `sequence3/test${frameNumber}.jpg`;
           img.classList.add(i === 0 ? "visible" : "hidden");
           container.appendChild(img);
           images.push(img);
