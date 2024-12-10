@@ -157,28 +157,44 @@ body {
 }
 
 /*------------------------------------
-  TYPOGRAPHY STYLES
+  HEADER STYLES
 ------------------------------------*/
 
 #header {
   padding: 20px;
+  position: relative;
+  /* min-height: 225px; */
 }
 
-#header .info-icon {
+.top-info {
   position: absolute;
-  top: 3.5%;
+  top: 0px;
   right: 23%;
-  width: 24px;
-  height: 24px;
+  display: flex;
+  align-items: center;
+  /* gap: 10px; */
+  margin-top: 3%;
+  z-index: 99;
+}
+
+.top-info .by-line {
+  width: 200px;
+  margin-top: 4px;
+}
+
+.top-info .info-icon {
+  width: 22px;
+  height: 22px;
   background-image: url("./assets/SVG/info.svg");
   background-size: contain;
   background-repeat: no-repeat;
   opacity: 0.7;
   cursor: pointer;
   transition: opacity 0.2s ease;
-  z-index: 50;
+
   text-decoration: none;
   display: block;
+  margin-left: 20px;
 }
 
 #header .info-icon:hover {
@@ -186,6 +202,16 @@ body {
   transform: scale(1.1);
   transition: transform 0.2s ease;
 }
+
+@media (max-width: 700px) {
+  .top-info {
+    display: none;
+  }
+}
+
+/*------------------------------------
+  TYPOGRAPHY STYLES
+------------------------------------*/
 
 .title {
   font-family: Avenue;
