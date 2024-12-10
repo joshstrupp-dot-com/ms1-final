@@ -52,9 +52,9 @@ body {
   margin-right: 0.5rem;
   padding: 0.2rem;
   font-family: Gantari;
-  font-size: 18px;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 100;
   line-height: 3;
   letter-spacing: -0.198px;
   border-radius: 4px;
@@ -166,7 +166,7 @@ body {
 
 .title {
   font-family: Avenue;
-  font-size: 50px;
+  font-size: 28px;
   font-style: normal;
   font-weight: 400;
   line-height: 100%;
@@ -377,7 +377,7 @@ body {
 .button.active {
   background: #f2eeeb;
   color: #000;
-  border: 2px solid #000;
+  border: 1px solid #000;
 }
 
 .category-filter {
@@ -443,7 +443,7 @@ body {
 
 .add-crop-button {
   margin-top: 10px;
-  border: 2px dashed white;
+  border: 1px dashed rgb(0, 0, 0);
 }
 
 .museum-span {
@@ -495,7 +495,7 @@ body {
 }
 
 .node:hover {
-  stroke-width: 7px !important;
+  stroke-width: 3px !important;
   opacity: 1 !important;
 }
 
@@ -651,6 +651,37 @@ body {
 .active-circle {
   opacity: 1 !important;
   stroke: #000;
-  stroke-width: 2px;
+  stroke-width: 1px;
   filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
 }
+
+/* Category-specific colors for body */
+body.museum-active #header,
+body.museum-active #visualization-bar {
+  background-color: #efebe1;
+  border-color: #bfb521;
+}
+
+body.topic-active #header,
+body.topic-active #visualization-bar {
+  background-color: #f2e3e3;
+  border-color: #f20c1f;
+}
+
+body.est_year-active #header,
+body.est_year-active #visualization-bar {
+  background-color: #f0f0f4;
+  border-color: #8e82d9;
+}
+
+/* Add transitions for smooth color changes */
+#header,
+#visualization-bar {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Ensure sidebar stays neutral
+#sidebar {
+  background-color: var(--color-base) !important;
+  border-color: initial !important;
+} */

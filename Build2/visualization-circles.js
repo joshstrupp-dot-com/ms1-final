@@ -207,7 +207,23 @@ document.addEventListener("DOMContentLoaded", function () {
             circle.name === currentlySelectedName ? 1 : 0.3
           );
 
+          // Remove any category-specific classes from body
+          document.body.classList.remove(
+            "museum-active",
+            "topic-active",
+            "est_year-active"
+          );
+
+          // Remove all category-specific filter classes and add visualization filter
+          galleryDepth.classList.remove(
+            "museum-filter",
+            "topic-filter",
+            "est_year-filter"
+          );
           galleryDepth.classList.add("cat-selected", "visualization-filter");
+
+          // Dispatch event to remove bar visualization
+          document.dispatchEvent(new CustomEvent("removeBarVisualization"));
 
           const filterEvent = new CustomEvent("filterChanged", {
             detail: {
@@ -221,7 +237,13 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log("Clearing active circle");
 
           node.style("opacity", 1);
-          galleryDepth.classList.remove("cat-selected", "visualization-filter");
+          galleryDepth.classList.remove(
+            "cat-selected",
+            "visualization-filter",
+            "museum-filter",
+            "topic-filter",
+            "est_year-filter"
+          );
 
           const clearFilterEvent = new CustomEvent("filterChanged", {
             detail: {

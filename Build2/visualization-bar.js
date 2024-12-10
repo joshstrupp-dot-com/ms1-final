@@ -202,16 +202,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to remove visualization
     function removeVisualization() {
-      console.log("Removing visualization");
-      svg
-        .selectAll(".bars")
-        .transition()
-        .duration(500)
-        .attr("opacity", 0)
-        .on("end", function () {
-          d3.select(this).remove();
-        });
-      console.log("Visualization removed");
+      // Remove all content from the SVG
+      svg.selectAll("*").remove();
+      console.log("Bar visualization removed");
     }
 
     // Listen for the custom 'categoryChanged' event
@@ -248,6 +241,12 @@ document.addEventListener("DOMContentLoaded", function () {
         drawVisualization(category, groupedData);
         console.log("Visualization drawn for category:", category);
       }
+    });
+
+    // Add this event listener after other event listeners
+    document.addEventListener("removeBarVisualization", function () {
+      console.log("Removing bar visualization");
+      removeVisualization();
     });
   });
 });

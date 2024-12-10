@@ -220,18 +220,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const galleryDepth = document.getElementById("gallery-depth");
     galleryDepth.innerHTML = "";
 
-    // Remove any existing filter classes
+    // Remove any existing filter classes from both gallery-depth and body
     galleryDepth.classList.remove(
       "museum-filter",
       "topic-filter",
-      "est_year-filter"
+      "est_year-filter",
+      "visualization-filter"
+    );
+    document.body.classList.remove(
+      "museum-active",
+      "topic-active",
+      "est_year-active"
     );
 
     // Adjust layout when category is selected
     if (category.toLowerCase() !== "all") {
       galleryDepth.classList.add("cat-selected");
-      // Add the category-specific filter class
+      // Add the category-specific filter class to gallery-depth
       galleryDepth.classList.add(`${category.toLowerCase()}-filter`);
+      // Add the category-specific class to body
+      document.body.classList.add(`${category.toLowerCase()}-active`);
     } else {
       galleryDepth.classList.remove("cat-selected");
     }
