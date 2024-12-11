@@ -5,8 +5,10 @@
 const COLLECTION_SUMMARY_SELECTOR = ".collection-summary";
 const DEFAULT_SUMMARY =
   "A layered aesthetic that playfully collages Victorian-era elegance, Ottoman-influenced silhouettes, and subcultural 20th-century platforms, resulting in a surreal fusion of historical grandeur and modern rebellion.";
-const API_KEY =
-  "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";
+// const API_KEY =
+//   "will go here once I can figure out hosting live but hiding WOW!";
+const ERROR_SUMMARY =
+  "Generative summaries are offline. Bummer. But you can still add to your closet. Enjoy!";
 
 // Store collection items
 let collectionItems = new Set();
@@ -153,7 +155,13 @@ Please provide ONE concise sentence that captures the essence of this collection
     }
   } catch (error) {
     console.error("Error generating collection summary:", error);
-    // Keep existing summary on error
+    // Update to show error message instead of keeping existing summary
+    const collectionSummaryDiv = document.querySelector(
+      COLLECTION_SUMMARY_SELECTOR
+    );
+    if (collectionSummaryDiv) {
+      collectionSummaryDiv.textContent = ERROR_SUMMARY;
+    }
   }
 }
 

@@ -95,13 +95,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Create the "+ Add to Collection" button
       const addToCollectionButton = document.createElement("button");
-      addToCollectionButton.textContent = "+ Entire Image";
+      addToCollectionButton.textContent = "+ Add Image to Closet";
       addToCollectionButton.className = "button add-to-collection";
       imageContainer.appendChild(addToCollectionButton);
 
       // Create the "+ Crop" button
       const addCropButton = document.createElement("button");
-      addCropButton.textContent = "+ Crop";
+      addCropButton.textContent = "+ Add Crop to Closet";
       addCropButton.className = "button add-crop";
       addCropButton.style.position = "absolute";
       addCropButton.style.display = "none"; // Initially hidden
