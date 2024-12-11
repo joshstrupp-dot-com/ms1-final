@@ -703,4 +703,91 @@ document.addEventListener("DOMContentLoaded", function () {
       document.dispatchEvent(clearCollectionEvent);
     }
   });
+
+  // Create and setup preview tooltip
+  const previewTooltip = document.createElement("div");
+  previewTooltip.className = "closet-preview-tooltip";
+  previewTooltip.style.cssText = `
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    width: 200px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+  `;
+
+  document.body.appendChild(previewTooltip);
+
+  // Add hover events to closet button
+  const closetButton = document.querySelector("#closet-button");
+  if (closetButton) {
+    closetButton.addEventListener("mouseenter", function (e) {
+      const collectionImages = document.querySelector("#collection-images");
+      if (!collectionImages || !collectionImages.children.length) {
+        previewTooltip.innerHTML =
+          "<p style='text-align: center; color: #666;'>Your closet is empty!</p>";
+      } else {
+        previewTooltip.innerHTML = "<div class='preview-grid'></div>";
+        const previewGrid = previewTooltip.querySelector(".preview-grid");
+
+        // Add up to 4 preview images
+        Array.from(collectionImages.children)
+          .slice(0, 6)
+          .forEach((wrapper) => {
+            const originalImg = wrapper.querySelector("img");
+            if (originalImg) {
+              const previewItem = document.createElement("div");
+              previewItem.style.cssText = `
+                width: 40px;
+                height: 40px;
+                margin: 2px;
+                display: inline-block;
+                overflow: hidden;
+              `;
+
+              const previewImg = document.createElement("img");
+              previewImg.src = originalImg.src;
+              previewImg.style.cssText = `
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+              `;
+
+              previewItem.appendChild(previewImg);
+              previewGrid.appendChild(previewItem);
+            }
+          });
+
+        // Add count if there are more items
+        if (collectionImages.children.length > 4) {
+          const countDiv = document.createElement("div");
+          countDiv.style.cssText = `
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+          `;
+          countDiv.textContent = `+${
+            collectionImages.children.length - 4
+          } more items`;
+          previewTooltip.appendChild(countDiv);
+        }
+      }
+
+      // Position the tooltip
+      const buttonRect = closetButton.getBoundingClientRect();
+      previewTooltip.style.left = `${buttonRect.left}px`;
+      previewTooltip.style.top = `${buttonRect.bottom + 5}px`;
+      previewTooltip.style.opacity = "1";
+    });
+
+    closetButton.addEventListener("mouseleave", function () {
+      previewTooltip.style.opacity = "0";
+    });
+  }
 });
