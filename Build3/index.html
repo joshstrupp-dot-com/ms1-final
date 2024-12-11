@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title class="title">Museum Visualization</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@300..900&family=Gantari:ital,wght@0,100..900;1,100..900&family=Kristi&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script type="module" src="init.js"></script>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="utils.js"></script>
+    <script type="module" src="generate-desc.js"></script>
+  </head>
+  <body>
+    <div id="header">
+      <div class="title">Piece By Piece</div>
+      <div class="h3">An exploration of fashion at The Smithsonian.</div>
+      <div class="top-info">
+        <a href="https://www.si.edu/">
+          <img
+            src="assets/SVG/smith+josh.svg"
+            class="by-line"
+            alt="Smithsonian logo"
+          />
+        </a>
+        <a href="http://joshstrupp.com"
+          ><img
+            src="assets/SVG/info.svg"
+            class="info-icon"
+            alt="Information icon"
+        /></a>
+      </div>
+    </div>
+    <div id="collection">
+      <div class="collection-summary-container">
+        <img src="assets/AI Icon.png" alt="AI Icon" class="ai-icon" />
+        <div class="collection-summary"></div>
+      </div>
+    </div>
+    <div id="sidebar">
+      <button
+        id="closet-button"
+        class="button collection-button"
+        data-overlay="collection"
+      >
+        Closet
+      </button>
+      <div class="divider"></div>
+      <div class="category-filter">
+        <div class="sidebar-header">Filters</div>
+        <button class="button button-category" data-category="Museum">
+          <span class="color-circle" style="background-color: #bfb521"></span>
+          Museum
+        </button>
+        <button class="button button-category" data-category="topic">
+          <span class="color-circle" style="background-color: #f20c1f"></span>
+          Topic
+        </button>
+        <button class="button button-category" data-category="est_year">
+          <span class="color-circle" style="background-color: #8e82d9"></span>
+          Year
+        </button>
+      </div>
+
+      <div id="visualization-circles"></div>
+    </div>
+
+    <div id="gallery-depth">
+      <!-- <ul id="gallery-list"></ul> -->
+    </div>
+
+    <div id="visualization-bar"></div>
+
+    <div id="overlay">
+      <!-- <div class="active"></div> -->
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="module" src="dataLoader.js"></script>
+    <script type="module" src="gallery-depth.js"></script>
+    <script type="module" src="visualization-bar.js"></script>
+    <script type="module" src="overlay.js"></script>
+    <script type="module" src="visualization-circles.js"></script>
+    <script type="module" src="collection.js"></script>
+  </body>
+</html>

@@ -279,7 +279,7 @@
         for (let i = 0; i <= frameCount; i++) {
           const img = new Image();
           const frameNumber = startFrame + i; // Calculate frame number
-          img.src = `sequence3/test${frameNumber}.jpg`;
+          img.src = `../Build2/sequence3/test${frameNumber}.jpg`;
           img.classList.add(i === 0 ? "visible" : "hidden");
           container.appendChild(img);
           images.push(img);
@@ -289,7 +289,7 @@
         enterButton.addEventListener("click", () => {
           container.classList.add("fade-out");
           setTimeout(() => {
-            window.location.href = "../Build2/index.html";
+            window.location.href = "../Build3/index.html";
           }, 500);
         });
 

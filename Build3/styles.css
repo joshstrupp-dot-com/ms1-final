@@ -1,0 +1,771 @@
+/*------------------------------------
+  BASE STYLES
+------------------------------------*/
+
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base colors */
+:root {
+  --color-Museum: #bcbcbc;
+  --color-Medium: #8e82d9;
+  --color-est_place: #f20c1f;
+  --color-topic: #bfb521;
+  --color-est_year: #f27b13;
+  --color-base: #f2eeeb;
+  --color-base-overlay: #d9d9d9;
+  --color-base-light: #f2eeebe5;
+}
+
+/* Fonts */
+@font-face {
+  font-family: Avenue;
+  src: url(../fonts/Avenue.otf);
+}
+
+/* Ensure full viewport coverage */
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-base);
+}
+
+/*------------------------------------
+  LAYOUT STYLES
+------------------------------------*/
+
+/* Main gallery */
+#gallery-depth {
+  width: 80vw;
+  height: 100vh;
+  transition: width 0.3s ease;
+}
+
+#gallery-depth.cat-selected {
+  width: 70vw;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  padding: 0.2rem;
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 100;
+  line-height: 3;
+  letter-spacing: -0.198px;
+  border-radius: 4px;
+  min-height: 100vh;
+  position: fixed;
+  overflow-y: auto;
+  text-align: center;
+  text-transform: uppercase;
+  border-width: 3px;
+  border-style: solid;
+  transition: width 0.3s ease;
+}
+
+/* Museum category */
+#gallery-depth.cat-selected.museum-filter {
+  background-color: rgba(191, 181, 33, 0.18); /* #bfb521 with transparency */
+  border-color: #bfb521;
+}
+
+/* Topic category */
+#gallery-depth.cat-selected.topic-filter {
+  background-color: rgba(242, 12, 31, 0.18); /* #f20c1f with transparency */
+  border-color: #f20c1f;
+}
+
+/* Est_year category */
+#gallery-depth.cat-selected.est_year-filter {
+  background-color: rgba(142, 130, 217, 0.18); /* #8e82d9 with transparency */
+  border-color: #8e82d9;
+}
+
+#gallery-depth.cat-selected.visualization-filter {
+  background-color: rgba(0, 0, 0, 0.18);
+  border-color: #000;
+}
+
+/* Visualization bar */
+#visualization-bar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 71vw;
+  right: 20vw;
+  overflow: hidden;
+}
+
+/* Sidebar */
+#sidebar {
+  width: 20vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  border: 1px solid var(--color-base-overlay);
+  overflow: hidden;
+  background-color: #f2eeeb;
+  box-shadow: -5px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+#sidebar .sidebar-header {
+  font-family: Gantari;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+  padding-bottom: 5%;
+}
+
+#sidebar .category-filter {
+  width: 100%;
+  height: 15vh;
+  position: absolute;
+  bottom: 55vh;
+}
+
+#sidebar #visualization-circles {
+  width: 100%;
+  height: 40vh;
+  position: absolute;
+  bottom: 20px;
+  padding-bottom: 2px;
+}
+
+/* More specific selector to target the SVG image */
+#visualization-circles svg image.background-silhouette {
+  opacity: 1;
+  height: 40vh;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* transform: translate(-50%, -50%); */
+}
+
+/* If you need to target specific SVG properties */
+#visualization-circles svg image.background-silhouette {
+  fill: currentColor; /* for SVG fill */
+  stroke: none; /* for SVG stroke */
+}
+
+/*------------------------------------
+  HEADER STYLES
+------------------------------------*/
+
+#header {
+  padding: 20px;
+  position: relative;
+  /* min-height: 225px; */
+}
+
+.top-info {
+  position: absolute;
+  top: 0px;
+  right: 23%;
+  display: flex;
+  align-items: center;
+  /* gap: 10px; */
+  margin-top: 3%;
+  z-index: 99;
+}
+
+.top-info .by-line {
+  width: 200px;
+  margin-top: 4px;
+}
+
+.top-info .info-icon {
+  width: 22px;
+  height: 22px;
+  background-image: url("./assets/SVG/info.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  text-decoration: none;
+  display: block;
+  margin-left: 20px;
+}
+
+#header .info-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+@media (max-width: 700px) {
+  .top-info {
+    display: none;
+  }
+}
+
+/*------------------------------------
+  TYPOGRAPHY STYLES
+------------------------------------*/
+
+.title {
+  font-family: Avenue;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 100%;
+  letter-spacing: -0.55px;
+}
+
+.h3 {
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+}
+
+/*------------------------------------
+  OVERLAY STYLES
+------------------------------------*/
+
+#overlay,
+#collection {
+  position: fixed;
+  top: 2.5%;
+  left: 2.5%;
+  width: 95%;
+  height: 95%;
+  opacity: 1;
+  z-index: 100;
+  visibility: hidden;
+  /* transition: visibility 0.3s ease; */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #000;
+}
+
+/* Semi-transparent background */
+#overlay::before,
+#collection::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-base);
+  opacity: 1;
+  z-index: -1;
+}
+
+#overlay.active,
+#collection.active {
+  visibility: visible;
+}
+
+/* Close button */
+.overlay-close {
+  position: fixed;
+  top: 4%;
+  right: 5%;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 101;
+}
+
+/* Overlay content */
+#overlay.active .text-box {
+  background-color: white;
+  height: 90vh;
+
+  width: 50vw;
+  padding: 2rem;
+  overflow-y: auto;
+  border-radius: 4px;
+  font-family: Gantari;
+}
+
+#overlay.active img {
+  max-width: 45vw;
+  object-fit: contain;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  border-radius: 4px;
+}
+
+.collection-title {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Avenue;
+  font-size: 50px;
+  color: black;
+  margin: 0;
+  padding: 0;
+}
+
+.collection-subtitle {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+}
+
+.button.collection-button {
+  margin: 10% 0;
+  display: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.button.add-crop {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #000;
+  padding: 10px 10px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.3s ease;
+}
+
+.button.add-crop:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/*------------------------------------
+  GALLERY STYLES
+------------------------------------*/
+
+#gallery-depth ul,
+.gallery-list {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0 30px;
+  margin: 0;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+#gallery-depth li,
+.gallery-list li {
+  flex: 1 1 calc(25% - 10px);
+  margin: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+#gallery-depth img,
+.gallery-list img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+  mask-border-radius: 4px;
+  -webkit-mask-border-radius: 4px;
+  transition: transform 0.2s, opacity 1s ease;
+  opacity: 1;
+  cursor: pointer;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.bounding-box {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  border: 1px dashed white;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/*------------------------------------
+  BUTTON STYLES
+------------------------------------*/
+
+/* General button */
+.button {
+  padding: 4% 25%;
+  margin: 5px auto;
+  background: #f2eeeb;
+  border: 1px solid #000;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  /* box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.15); */
+  color: #000;
+  display: block;
+}
+
+.button:hover {
+  background: #ffffff;
+}
+
+.button.active {
+  background: #f2eeeb;
+  color: #000;
+  border: 1px solid #000;
+}
+
+.category-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30vw;
+  padding: 10px 0;
+}
+
+.divider {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 10% 10%;
+  width: 80%;
+}
+
+.button-category {
+  padding: 8px 16px;
+  margin: 1px;
+  color: #000;
+  font-family: Gantari;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: -0.154px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  width: 60%;
+  max-width: 160px;
+}
+
+.button-category:hover {
+  background: #fff;
+}
+
+.button-category .color-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* "+ Add to Collection" button */
+.add-to-collection {
+  position: fixed; /* Change from absolute to fixed */
+  top: 5%; /* Match overlay padding */
+  left: 5%;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  user-select: none;
+  z-index: 102; /* Ensure it's above other overlay elements */
+}
+
+.add-crop-button {
+  margin-top: 10px;
+  border: 1px dashed rgb(0, 0, 0);
+}
+
+.museum-span {
+  background: rgba(191, 181, 33, 0.18);
+}
+
+.topic-span {
+  background: rgba(142, 130, 217, 0.18);
+}
+
+.year-span {
+  background: rgba(242, 12, 31, 0.18);
+}
+
+.add-to-collection:hover {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.add-to-collection.clicked {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: rgb(0, 0, 0);
+  pointer-events: none;
+  cursor: default;
+}
+
+.add-to-collection.clicked::before {
+  content: "✓ ";
+}
+
+/* Image container */
+.image-container {
+  position: relative;
+}
+
+.metadata {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/*------------------------------------
+  VISUALIZATION STYLES
+------------------------------------*/
+
+.bars {
+  transform: translateY(25%);
+  transition: transform 5s ease, fill 6s ease;
+}
+
+.node:hover {
+  stroke-width: 3px !important;
+  opacity: 1 !important;
+}
+
+.visualization-tooltip {
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  position: absolute;
+  pointer-events: none;
+  font-family: Gantari;
+  font-size: 14px;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  z-index: 100000;
+}
+
+.visualization-circle {
+  transition: stroke-width 0.2s ease, fill 0.2s ease;
+  cursor: pointer;
+}
+
+.visualization-circle:hover {
+  stroke: black;
+  stroke-width: 1px;
+  fill: white !important;
+}
+
+/*------------------------------------
+  COLLECTION STYLES
+------------------------------------*/
+
+#collection-images {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#collection-images img {
+  width: 50%;
+  height: 50%;
+  position: absolute;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+.collection-summary-container {
+  position: relative;
+  width: 25%;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #000;
+  padding: 1rem;
+  padding-top: calc(1rem + 25px);
+  pointer-events: none;
+}
+
+.ai-icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  top: 10px;
+  left: 14.5px;
+  z-index: 1;
+}
+
+.collection-summary {
+  font-family: "Gantari", sans-serif;
+  font-size: 14px;
+  width: 100%;
+  position: relative;
+}
+
+/*------------------------------------
+  ANIMATIONS
+------------------------------------*/
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/*------------------------------------
+  RESPONSIVE STYLES
+------------------------------------*/
+
+/* Portrait */
+@media (max-aspect-ratio: 1/1) {
+  #gallery-depth li {
+    height: 30vh;
+  }
+}
+
+/* Short screens */
+@media (max-height: 480px) {
+  #gallery-depth li {
+    height: 80vh;
+  }
+}
+
+/* Smaller screens in portrait */
+@media (max-aspect-ratio: 1/1) and (max-width: 480px) {
+  #gallery-depth ul {
+    flex-direction: row;
+  }
+
+  #gallery-depth li {
+    height: auto;
+    width: 100%;
+  }
+
+  #gallery-depth img {
+    width: 100%;
+    max-height: 75vh;
+    min-width: 0;
+  }
+}
+
+.custom-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  font-family: Gantari;
+  font-size: 14px;
+}
+
+.context-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: Gantari;
+  font-size: 14px;
+}
+
+.context-menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+.context-menu-delete {
+  border-top: 1px solid #eee;
+  margin-top: 4px;
+  padding-top: 8px;
+  color: #ff4444;
+}
+
+.context-menu-delete:hover {
+  background-color: #fff0f0;
+}
+
+.clear-all-button {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px 15px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 4px;
+  border: 1px solid black;
+  cursor: pointer;
+  z-index: 101; /* Ensure it appears above other elements */
+  transition: background-color 0.3s ease;
+}
+
+.clear-all-button:hover {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.active-circle {
+  opacity: 1 !important;
+  stroke: #000;
+  stroke-width: 1px;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Category-specific colors for body */
+body.museum-active #header,
+body.museum-active #visualization-bar {
+  background-color: #efebe1;
+  border-color: #bfb521;
+}
+
+body.topic-active #header,
+body.topic-active #visualization-bar {
+  background-color: #f2e3e3;
+  border-color: #f20c1f;
+}
+
+body.est_year-active #header,
+body.est_year-active #visualization-bar {
+  background-color: #f0f0f4;
+  border-color: #8e82d9;
+}
+
+/* Add transitions for smooth color changes */
+#header,
+#visualization-bar {
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Ensure sidebar stays neutral
+#sidebar {
+  background-color: var(--color-base) !important;
+  border-color: initial !important;
+} */
+
+/* .collection-summary {
+  text-align: center;
+} */
