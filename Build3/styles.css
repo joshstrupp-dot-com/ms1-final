@@ -794,3 +794,43 @@ body.est_year-active #visualization-bar {
   line-height: 3;
   letter-spacing: -0.198px;
 }
+
+/*------------------------------------
+  MOBILE OVERLAY STYLES
+------------------------------------*/
+
+#mobile-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--color-base);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 2rem;
+}
+
+#mobile-overlay h1 {
+  font-family: Avenue;
+  font-size: 48px;
+  margin-bottom: 1rem;
+}
+
+#mobile-overlay p {
+  font-family: Gantari;
+  font-size: 18px;
+  line-height: 1.5;
+  max-width: 80%;
+}
+
+/* Show overlay on mobile devices */
+@media (max-width: 768px) {
+  #mobile-overlay {
+    display: flex;
+  }
+}

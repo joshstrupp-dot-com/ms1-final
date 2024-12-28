@@ -10,6 +10,15 @@ import {
   loadImagesInContainer,
 } from "./utils.js";
 
+// Helper function to shuffle array (add this near the top with other utility functions)
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM Content Loaded - Initializing gallery-depth");
 
@@ -38,9 +47,17 @@ document.addEventListener("DOMContentLoaded", function () {
       itemCount: items.length,
     });
 
-    items.slice(startIndex, endIndex).forEach((item) => {
+    // Create a copy of the items array to avoid modifying the original
+    let itemsToRender = items.slice(startIndex, endIndex);
+
+    // Only shuffle if we're showing all items and this is the first page
+    if (currentCategory === "all" && currentPage === 1) {
+      itemsToRender = shuffleArray(itemsToRender);
+    }
+
+    itemsToRender.forEach((item) => {
       const li = document.createElement("li");
-      li.setAttribute("data-name", item[CONFIG.DATA_KEYS.NAME]); // Add data-name attribute
+      li.setAttribute("data-name", item[CONFIG.DATA_KEYS.NAME]);
       const imageWrapper = createImageElement(item);
       li.appendChild(imageWrapper);
       ul.appendChild(li);

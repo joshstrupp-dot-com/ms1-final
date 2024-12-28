@@ -213,9 +213,56 @@
           transform: scale(0.8) translateY(-3px);
         }
       }
+
+      /*------------------------------------
+        MOBILE OVERLAY STYLES
+      ------------------------------------*/
+
+      #mobile-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #f2eeeb;
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      #mobile-overlay h1 {
+        font-family: Avenue;
+        font-size: 48px;
+        margin-bottom: 1rem;
+      }
+
+      #mobile-overlay p {
+        font-family: Gantari;
+        font-size: 18px;
+        line-height: 1.5;
+        max-width: 80%;
+      }
+
+      /* Show overlay on mobile devices */
+      @media (max-width: 768px) {
+        #mobile-overlay {
+          display: flex;
+        }
+      }
     </style>
   </head>
   <body>
+    <div id="mobile-overlay">
+      <h1>SHUCKS</h1>
+      <p>
+        Looks like you're on a mobile device. Come back next time you're on a
+        bigger screen!
+      </p>
+    </div>
     <div class="container">
       <div class="text-column">
         <!-- Dynamic Text Elements -->
