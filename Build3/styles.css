@@ -796,6 +796,42 @@ body.est_year-active #visualization-bar {
 }
 
 /*------------------------------------
+  INFO OVERLAY STYLES
+------------------------------------*/
+
+.info-overlay {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300px;
+  background: white;
+  border: 1px solid #000;
+  border-radius: 4px;
+  padding: 15px;
+  margin-top: 10px;
+  font-family: Gantari;
+  font-size: 14px;
+  line-height: 1.5;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-overlay.active {
+  display: block;
+}
+
+.info-overlay a {
+  color: #000;
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.info-overlay a:hover {
+  opacity: 0.7;
+}
+
+/*------------------------------------
   MOBILE OVERLAY STYLES
 ------------------------------------*/
 

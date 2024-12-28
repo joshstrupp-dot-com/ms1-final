@@ -17,6 +17,7 @@
     <script type="module" src="config.js"></script>
     <script type="module" src="utils.js"></script>
     <script type="module" src="generate-desc.js"></script>
+    <script type="module" src="info.js"></script>
   </head>
   <body>
     <div id="mobile-overlay">
@@ -30,19 +31,30 @@
       <div class="title">Piece By Piece</div>
       <div class="h3">An exploration of fashion at The Smithsonian.</div>
       <div class="top-info">
-        <a href="https://www.si.edu/">
+        <img
+          src="assets/SVG/smith+josh.svg"
+          class="by-line"
+          alt="Smithsonian logo"
+        />
+        <div class="info-container">
           <img
-            src="assets/SVG/smith+josh.svg"
-            class="by-line"
-            alt="Smithsonian logo"
-          />
-        </a>
-        <a href="http://joshstrupp.com"
-          ><img
             src="assets/SVG/info.svg"
             class="info-icon"
             alt="Information icon"
-        /></a>
+          />
+          <div class="info-overlay">
+            Piece by Piece was built by me,
+            <a href="https://joshstrupp.com/about">Josh</a>, as part of the
+            Parson's School of Design partnership with the
+            <a href="https://www.si.edu/">Smithsonian Institute</a>. You can
+            visit my
+            <a href="https://www.joshstrupp.com/interactive/piece-by-piece"
+              >portfolio</a
+            >
+            to read further on the project's development and technical
+            components.
+          </div>
+        </div>
       </div>
     </div>
     <div id="collection">
